@@ -1,0 +1,11 @@
+<div class="grid grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-3">
+  @for (task of tasks(); track task.title) {
+    <p-card class="border-l-4 shadow-sm" [styleClass]="task.colorClass">
+      <ng-template #header>
+        <div class="border-b p-3 font-bold" [class]="task.headerClass">{{ task.title }}</div>
+      </ng-template>
+      <p class="mb-4 text-sm text-gray-600">{{ task.description }}</p>
+      <p-button label="Atender Tarea" icon="pi pi-external-link" [outlined]="true" size="small" />
+    </p-card>
+  }
+</div>

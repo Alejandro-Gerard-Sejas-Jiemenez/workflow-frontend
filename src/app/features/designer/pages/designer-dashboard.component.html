@@ -1,0 +1,31 @@
+<div class="flex h-screen flex-col bg-gray-50">
+  <nav class="flex items-center justify-between bg-violet-800 px-6 py-3 text-white shadow-lg">
+    <div class="flex items-center gap-3">
+      <i class="pi pi-palette text-2xl"></i>
+      <span class="text-xl font-bold tracking-tight">Diseñador de Flujos</span>
+    </div>
+    <div class="flex items-center gap-4">
+      <span class="text-sm font-medium">Hola, {{ (user$ | async)?.nombre }}</span>
+      <p-button
+        icon="pi pi-sign-out"
+        label="Salir"
+        (onClick)="logout()"
+        [text]="true"
+        class="text-white"
+        size="small"
+      />
+    </div>
+  </nav>
+
+  <main class="flex flex-grow flex-col gap-6 p-6">
+    <div class="grid h-full grid-cols-1 gap-6 lg:grid-cols-4">
+      <div class="lg:col-span-1">
+        <app-designer-sidebar [infoItems]="infoItems" [guidelines]="guidelines" />
+      </div>
+
+      <div class="lg:col-span-3">
+        <app-gojs-workflow-editor />
+      </div>
+    </div>
+  </main>
+</div>

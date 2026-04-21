@@ -1,0 +1,22 @@
+<div class="flex flex-col gap-4">
+  <p-card>
+    <ng-template #header>
+      <div class="border-b bg-violet-50 p-3 font-bold text-violet-900">Estado del Proyecto</div>
+    </ng-template>
+    <div class="flex flex-col gap-3">
+      @for (item of infoItems(); track item.label) {
+        <div class="flex items-center justify-between border-b pb-2 text-sm last:border-b-0 last:pb-0">
+          <span class="text-gray-500">{{ item.label }}:</span>
+          <span [class]="item.valueClass">{{ item.value }}</span>
+        </div>
+      }
+    </div>
+  </p-card>
+
+  <p-card>
+    <ng-template #header>
+      <div class="border-b bg-gray-50 p-3 font-bold text-gray-700">Reglas de Flujo (UML)</div>
+    </ng-template>
+    <p class="text-xs leading-relaxed text-gray-500">{{ guidelines() }}</p>
+  </p-card>
+</div>

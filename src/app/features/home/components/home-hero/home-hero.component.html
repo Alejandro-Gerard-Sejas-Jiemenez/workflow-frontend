@@ -1,0 +1,24 @@
+<div class="max-w-2xl">
+  <h1 class="m-0 max-w-2xl text-[clamp(2.5rem,4vw,4rem)] leading-none font-black text-slate-900">
+    Gestiona procesos con una vista clara y directa.
+  </h1>
+
+  <p class="app-text-muted mt-5 max-w-xl text-lg leading-7">
+    Un acceso centralizado para revisar tareas, aprobaciones y flujos de trabajo
+    sin saturar la pantalla con informacion innecesaria.
+  </p>
+
+  <div class="mt-8 grid gap-3">
+    @for (feature of features(); track feature.title) {
+      <article class="app-soft-card flex items-start gap-4 rounded-2xl p-4">
+        <div class="app-surface-icon h-10 w-10 shrink-0">
+          <i [class]="feature.icon"></i>
+        </div>
+        <div>
+          <h2 class="m-0 text-sm font-bold text-slate-900">{{ feature.title }}</h2>
+          <p class="app-text-muted mt-1 mb-0 text-sm leading-6">{{ feature.description }}</p>
+        </div>
+      </article>
+    }
+  </div>
+</div>

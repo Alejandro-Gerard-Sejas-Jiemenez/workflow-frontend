@@ -1,0 +1,87 @@
+.app-pill {
+  border: 1px solid rgba(var(--primary-uml-light-rgb), 0.4);
+  background: #ffffff;
+  box-shadow: 0 10px 30px rgba(var(--primary-uml-dark-rgb), 0.08);
+}
+
+.app-icon-chip {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 1rem;
+  background: rgba(var(--primary-uml-light-rgb), 0.28);
+  color: var(--primary-uml);
+}
+
+.app-surface-icon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 1rem;
+  background: rgba(var(--primary-uml-light-rgb), 0.35);
+  color: var(--primary-uml);
+}
+
+.app-soft-card {
+  border: 1px solid #e2e8f0;
+  background: #ffffff;
+  box-shadow: 0 14px 32px rgba(15, 23, 42, 0.05);
+}
+
+.app-auth-panel {
+  border: 1px solid #e2e8f0;
+  background: #ffffff;
+  box-shadow: 0 22px 54px rgba(15, 23, 42, 0.08);
+}
+
+.app-auth-input .p-iconfield {
+  display: block;
+}
+
+.app-auth-input .p-inputicon {
+  left: 1rem;
+}
+
+.app-auth-input .p-password {
+  width: 100%;
+}
+
+.app-auth-input .p-password input,
+.app-auth-input .p-inputtext {
+  width: 100% !important;
+  color: #0f172a !important;
+  border-radius: 1rem !important;
+  background: #ffffff !important;
+  border: 1px solid #cbd5e1 !important;
+  padding: 1rem 1rem 1rem 2.75rem !important;
+}
+
+.app-auth-input .p-password input:focus,
+.app-auth-input .p-inputtext:focus {
+  border-color: var(--primary-uml) !important;
+  box-shadow: 0 0 0 4px rgba(var(--primary-uml-rgb), 0.12) !important;
+}
+
+.app-login-button .p-button {
+  width: 100% !important;
+  justify-content: center !important;
+  border: none !important;
+  padding: 0.95rem 1rem !important;
+  border-radius: 1rem !important;
+  font-weight: 700 !important;
+  color: var(--text-uml-strong) !important;
+  background: var(--primary-uml) !important;
+  box-shadow: 0 14px 30px rgba(var(--primary-uml-dark-rgb), 0.2);
+}
+
+.app-login-button .p-button:hover {
+  transform: translateY(-1px);
+  background: var(--primary-uml-dark) !important;
+  box-shadow: 0 18px 36px rgba(var(--primary-uml-dark-rgb), 0.24);
+}
+
+.app-login-button .p-button:disabled {
+  background: #cbd5e1 !important;
+  box-shadow: none !important;
+  opacity: 0.7;
+}

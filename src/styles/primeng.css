@@ -1,0 +1,9 @@
+.p-button {
+  background: var(--primary-uml) !important;
+  border-color: var(--primary-uml) !important;
+}
+
+.p-button:hover {
+  background: var(--primary-uml-dark) !important;
+  border-color: var(--primary-uml-dark) !important;
+}

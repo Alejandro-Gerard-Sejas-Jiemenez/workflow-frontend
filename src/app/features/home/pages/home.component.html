@@ -1,0 +1,10 @@
+<p-toast />
+
+<app-auth-shell>
+  <app-home-hero shell-hero [features]="features" />
+
+  <app-home-login-form
+    shell-form
+    [loading]="loading()"
+    (loginSubmit)="onLogin($event)" />
+</app-auth-shell>

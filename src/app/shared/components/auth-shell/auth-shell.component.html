@@ -1,0 +1,14 @@
+<div class="auth-shell min-h-screen overflow-hidden">
+  <div class="auth-shell__background"></div>
+  <div class="auth-shell__glow"></div>
+
+  <main class="relative z-10 mx-auto flex min-h-screen w-full max-w-7xl flex-col lg:flex-row">
+    <section class="flex flex-1 items-center px-6 py-14 sm:px-10 lg:px-16">
+      <ng-content select="[shell-hero]"></ng-content>
+    </section>
+
+    <section class="flex flex-1 items-center justify-center px-6 py-14 sm:px-10 lg:px-16">
+      <ng-content select="[shell-form]"></ng-content>
+    </section>
+  </main>
+</div>

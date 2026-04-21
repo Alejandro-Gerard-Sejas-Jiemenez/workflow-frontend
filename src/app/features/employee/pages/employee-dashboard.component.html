@@ -1,0 +1,24 @@
+<div class="flex h-screen flex-col bg-gray-50">
+  <nav class="flex items-center justify-between bg-blue-800 px-6 py-4 text-white shadow-md">
+    <div class="flex items-center gap-3">
+      <i class="pi pi-briefcase text-2xl"></i>
+      <span class="text-xl font-bold tracking-tight">Portal del Funcionario</span>
+    </div>
+    <div class="flex items-center gap-4">
+      <span class="text-sm font-medium">Bandeja de Entrada: {{ (user$ | async)?.nombre }}</span>
+      <p-button
+        icon="pi pi-sign-out"
+        label="Logout"
+        (onClick)="logout()"
+        [text]="true"
+        class="text-white"
+        size="small"
+      />
+    </div>
+  </nav>
+
+  <main class="mx-auto w-full max-w-7xl p-8">
+    <h2 class="mb-6 text-2xl font-bold text-gray-800">Mis Tareas Pendientes</h2>
+    <app-employee-task-list [tasks]="tasks" />
+  </main>
+</div>

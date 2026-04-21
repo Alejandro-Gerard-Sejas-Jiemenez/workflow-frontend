@@ -1,0 +1,12 @@
+.app-text-muted {
+  color: #475569;
+}
+
+.app-text-soft {
+  color: #64748b;
+}
+
+.app-overline {
+  letter-spacing: 0.22em;
+  text-transform: uppercase;
+}

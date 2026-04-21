@@ -1,0 +1,25 @@
+<div class="flex h-screen flex-col bg-gray-50">
+  <nav class="flex items-center justify-between bg-violet-900 px-6 py-4 text-white shadow-md">
+    <div class="flex items-center gap-3">
+      <i class="pi pi-cog text-2xl"></i>
+      <span class="text-xl font-bold tracking-tight">Administración Central</span>
+    </div>
+    <div class="flex items-center gap-4">
+      <span class="text-sm font-medium">Panel de Control: Admin</span>
+      <p-button
+        icon="pi pi-sign-out"
+        label="Logout"
+        (onClick)="logout()"
+        class="text-white"
+        [text]="true"
+        severity="secondary"
+        size="small"
+      />
+    </div>
+  </nav>
+
+  <main class="p-8">
+    <app-admin-metrics [metrics]="metrics" />
+    <app-admin-access-panel />
+  </main>
+</div>

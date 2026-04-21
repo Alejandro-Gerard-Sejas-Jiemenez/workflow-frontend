@@ -1,0 +1,48 @@
+<div class="app-auth-panel w-full max-w-md rounded-[2rem] p-8 sm:p-10">
+  <div>
+    <p class="app-overline m-0 text-sm font-bold text-[var(--primary-uml)]">Acceso seguro</p>
+    <h2 class="mt-3 mb-0 text-3xl font-bold text-slate-900">Iniciar sesion</h2>
+    <p class="app-text-soft mt-3 mb-0 text-sm leading-6">
+      Ingresa tus credenciales para continuar con tu panel de trabajo.
+    </p>
+  </div>
+
+  <form (ngSubmit)="submit()" #loginForm="ngForm" class="mt-8 grid gap-6">
+    <div class="grid gap-3">
+      <label for="email" class="app-overline app-text-soft text-xs font-bold">Correo electronico</label>
+      <p-iconField iconPosition="left" class="app-auth-input w-full">
+        <p-inputIcon class="pi pi-envelope text-slate-400" />
+        <input pInputText id="email" name="email" type="email" placeholder="usuario@ejemplo.com"
+          [(ngModel)]="email" required class="w-full" />
+      </p-iconField>
+    </div>
+
+    <div class="grid gap-3">
+      <div class="flex items-center justify-between gap-3">
+        <label for="password" class="app-overline app-text-soft text-xs font-bold">Contrasena</label>
+        <a href="#" class="text-xs font-medium no-underline text-[var(--primary-uml)]">
+          Olvidaste tu contrasena?
+        </a>
+      </div>
+
+      <p-iconField iconPosition="left" class="app-auth-input w-full">
+        <p-inputIcon class="pi pi-lock text-slate-400" />
+        <p-password id="password" name="password" [(ngModel)]="password" [feedback]="false"
+          [toggleMask]="true" placeholder="••••••••" class="w-full" [required]="true" [fluid]="true" />
+      </p-iconField>
+    </div>
+
+    <div class="rounded-2xl border border-slate-200 bg-slate-50 px-4 py-3 text-sm leading-6 text-[var(--text-uml-soft)]">
+      Accede para revisar procesos, aprobaciones y tareas desde un solo lugar.
+    </div>
+
+    <div class="grid gap-4 pt-1">
+      <p-button label="Acceder al sistema" type="submit" class="app-login-button w-full"
+        [loading]="loading()" [disabled]="loading() || !loginForm.form.valid" />
+
+      <p class="app-text-soft m-0 text-center text-xs leading-6">
+        Tus permisos y vista se asignaran automaticamente segun tu rol.
+      </p>
+    </div>
+  </form>
+</div>
