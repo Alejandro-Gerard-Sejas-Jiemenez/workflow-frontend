@@ -30,7 +30,7 @@ yarn-error.log
 .history/*
 
 # Miscellaneous
-/.angular/cache
+.angular/
 .sass-cache/
 /connect.lock
 /coverage
@@ -48,3 +48,5 @@ Thumbs.db
 
 # Environment variables
 .env
+.env.*
+!.env.example
