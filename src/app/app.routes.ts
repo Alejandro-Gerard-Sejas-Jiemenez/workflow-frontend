@@ -19,6 +19,12 @@ export const routes: Routes = [
     data: { roles: ['ROLE_DESIGNER'] }
   },
   {
+    path: 'designer/workflows/:workflowId',
+    loadComponent: () => import('./features/designer/pages/designer-workflow-editor-page.component').then(m => m.DesignerWorkflowEditorPageComponent),
+    canActivate: [authGuard],
+    data: { roles: ['ROLE_DESIGNER'] }
+  },
+  {
     path: 'employee',
     loadComponent: () => import('./features/employee/pages/employee-dashboard.component').then(m => m.EmployeeDashboardComponent),
     canActivate: [authGuard],

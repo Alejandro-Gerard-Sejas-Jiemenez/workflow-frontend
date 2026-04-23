@@ -1,22 +1,56 @@
+import { AsyncPipe } from '@angular/common';
 import { ChangeDetectionStrategy, Component, inject } from '@angular/core';
-import { Button } from 'primeng/button';
+import { Subject, startWith, switchMap } from 'rxjs';
 import { AuthService } from '../../../core/services/auth.service';
-import { ADMIN_METRICS } from '../data/admin-dashboard.data';
-import { AdminMetricsComponent } from '../components/admin-metrics/admin-metrics.component';
-import { AdminAccessPanelComponent } from '../components/admin-access-panel/admin-access-panel.component';
+import { AdminApiService } from '../services/admin-api.service';
+import { AdminUserCreate, AdminUserUpdate, EMPTY_ADMIN_DASHBOARD } from '../data/admin-dashboard.data';
+import { AdminUserManagementComponent } from '../components/admin-user-management/admin-user-management.component';
+import { AdminUserCreatorComponent } from '../components/admin-user-creator/admin-user-creator.component';
+import { PageHeaderComponent } from '../../../shared/layout/page-header/page-header.component';
 
 @Component({
   selector: 'app-admin-dashboard',
   standalone: true,
-  imports: [Button, AdminMetricsComponent, AdminAccessPanelComponent],
+  imports: [AsyncPipe, AdminUserManagementComponent, AdminUserCreatorComponent, PageHeaderComponent],
   templateUrl: './admin-dashboard.component.html',
   changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class AdminDashboardComponent {
-  protected readonly metrics = ADMIN_METRICS;
+  protected readonly emptyState = EMPTY_ADMIN_DASHBOARD;
+  private readonly refresh$ = new Subject<void>();
+  private readonly adminApiService = inject(AdminApiService);
+  protected readonly dashboard$ = this.refresh$.pipe(
+    startWith(void 0),
+    switchMap(() => this.adminApiService.getDashboardData())
+  );
   private readonly authService = inject(AuthService);
+  protected readonly user$ = this.authService.currentUser$;
 
   protected logout(): void {
     this.authService.logout();
+  }
+
+  protected deactivateUser(userId: string): void {
+    this.adminApiService.deactivateUser(userId).subscribe({
+      next: () => this.refresh$.next()
+    });
+  }
+
+  protected restoreUser(userId: string): void {
+    this.adminApiService.restoreUser(userId).subscribe({
+      next: () => this.refresh$.next()
+    });
+  }
+
+  protected createUser(user: AdminUserCreate): void {
+    this.adminApiService.createUser(user).subscribe({
+      next: () => this.refresh$.next()
+    });
+  }
+
+  protected updateUser(user: AdminUserUpdate): void {
+    this.adminApiService.updateUser(user).subscribe({
+      next: () => this.refresh$.next()
+    });
   }
 }

@@ -1,6 +1,31 @@
 <div class="flex flex-col gap-4">
   <p-card>
     <ng-template #header>
+      <div class="border-b bg-violet-50 p-3 font-bold text-violet-900">Workflows disponibles</div>
+    </ng-template>
+    <div class="flex flex-col gap-2">
+      @if (workflows().length) {
+        @for (workflow of workflows(); track workflow.id) {
+          <button
+            type="button"
+            class="rounded-lg border px-3 py-3 text-left transition"
+            [class.border-violet-300]="selectedWorkflowId() === workflow.id"
+            [class.bg-violet-50]="selectedWorkflowId() === workflow.id"
+            [class.border-gray-200]="selectedWorkflowId() !== workflow.id"
+            [class.bg-white]="selectedWorkflowId() !== workflow.id"
+            (click)="selectWorkflow.emit(workflow.id)">
+            <p class="font-semibold text-gray-800">{{ workflow.nombre }}</p>
+            <p class="mt-1 text-xs text-gray-500">{{ workflow.descripcion }}</p>
+          </button>
+        }
+      } @else {
+        <p class="text-xs leading-relaxed text-gray-500">No hay workflows disponibles para editar.</p>
+      }
+    </div>
+  </p-card>
+
+  <p-card>
+    <ng-template #header>
       <div class="border-b bg-violet-50 p-3 font-bold text-violet-900">Estado del Proyecto</div>
     </ng-template>
     <div class="flex flex-col gap-3">

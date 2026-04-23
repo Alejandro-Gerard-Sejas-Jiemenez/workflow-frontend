@@ -4,4 +4,5 @@
 @import './styles/utilities.css';
 @import './styles/auth.css';
 @import './styles/primeng.css';
+@import 'ng-diagram/styles.css';
 @import "primeicons/primeicons.css";

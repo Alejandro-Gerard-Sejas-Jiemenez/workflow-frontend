@@ -1,0 +1,119 @@
+<section class="grid gap-6">
+  <article class="rounded-2xl border border-slate-200 bg-white p-6 shadow-sm shadow-slate-200/60">
+    <div class="mb-5 flex items-center justify-between">
+      <div>
+        <p class="text-[11px] font-semibold uppercase tracking-[0.18em] text-slate-500">Directorio</p>
+        <h2 class="mt-1 text-xl font-semibold tracking-tight text-slate-900">Usuarios</h2>
+      </div>
+      <span class="rounded-full bg-emerald-100 px-3 py-1 text-xs font-semibold text-emerald-700">
+        {{ visibleCount }}
+      </span>
+    </div>
+
+    <div class="mb-5 grid grid-cols-3 gap-2 rounded-2xl border border-slate-200 bg-slate-50 p-1">
+      <button
+        type="button"
+        class="rounded-xl px-3 py-2 text-sm font-medium transition"
+        [class.bg-white]="filter() === 'active'"
+        [class.text-slate-900]="filter() === 'active'"
+        [class.shadow-sm]="filter() === 'active'"
+        [class.text-slate-500]="filter() !== 'active'"
+        (click)="setFilter('active')">
+        Activos
+      </button>
+      <button
+        type="button"
+        class="rounded-xl px-3 py-2 text-sm font-medium transition"
+        [class.bg-white]="filter() === 'inactive'"
+        [class.text-slate-900]="filter() === 'inactive'"
+        [class.shadow-sm]="filter() === 'inactive'"
+        [class.text-slate-500]="filter() !== 'inactive'"
+        (click)="setFilter('inactive')">
+        Inactivos
+      </button>
+      <button
+        type="button"
+        class="rounded-xl px-3 py-2 text-sm font-medium transition"
+        [class.bg-white]="filter() === 'all'"
+        [class.text-slate-900]="filter() === 'all'"
+        [class.shadow-sm]="filter() === 'all'"
+        [class.text-slate-500]="filter() !== 'all'"
+        (click)="setFilter('all')">
+        Todos
+      </button>
+    </div>
+
+    <div class="space-y-3">
+      @if (visibleUsers.length) {
+        @for (user of paginatedUsers; track user.id) {
+          <div class="rounded-xl border border-slate-200 p-4">
+            <div class="flex flex-col gap-4 lg:flex-row lg:items-start lg:justify-between">
+              <div class="flex min-w-0 gap-3">
+                <div class="flex h-11 w-11 items-center justify-center rounded-full bg-violet-100 text-xs font-semibold text-violet-700">
+                  {{ user.name.charAt(0) }}
+                </div>
+                <div class="min-w-0">
+                  <p class="font-semibold text-slate-800">{{ user.name }}</p>
+                  <p class="text-sm text-slate-500">{{ user.email }}</p>
+                  <div class="mt-2 flex flex-wrap gap-2 text-xs">
+                    <span class="rounded-full bg-violet-100 px-2.5 py-1 font-medium text-violet-700">{{ user.role }}</span>
+                    <span class="rounded-full bg-slate-100 px-2.5 py-1 font-medium text-slate-600">{{ user.department }}</span>
+                    @if (inactiveUsers().some(inactive => inactive.id === user.id)) {
+                      <span class="rounded-full bg-amber-100 px-2.5 py-1 font-medium text-amber-700">Inactivo</span>
+                    }
+                  </div>
+                </div>
+              </div>
+
+              <div class="flex shrink-0 gap-2">
+                @if (!inactiveUsers().some(inactive => inactive.id === user.id)) {
+                  <p-button
+                    label="Editar"
+                    icon="pi pi-pencil"
+                    styleClass="border-violet-200 bg-violet-50 text-violet-700 hover:border-violet-300 hover:bg-violet-100"
+                    size="small"
+                    (onClick)="startEditing(user.id)" />
+                  <p-button
+                    label="Desactivar"
+                    icon="pi pi-user-minus"
+                    styleClass="border-amber-200 bg-amber-50 text-amber-700 hover:border-amber-300 hover:bg-amber-100"
+                    size="small"
+                    (onClick)="deactivateUser.emit(user.id)" />
+                } @else {
+                  <p-button
+                    label="Restaurar"
+                    icon="pi pi-refresh"
+                    severity="contrast"
+                    [outlined]="true"
+                    size="small"
+                    (onClick)="restoreUser.emit(user.id)" />
+                }
+              </div>
+            </div>
+          </div>
+          @if (editingUserId() === user.id) {
+            <app-admin-user-editor
+              [user]="user"
+              [roles]="roles()"
+              (saveUser)="saveUser($event)"
+              (cancelEdit)="stopEditing()" />
+          }
+        }
+        <p-paginator
+          [first]="first()"
+          [rows]="rows()"
+          [totalRecords]="visibleCount"
+          [showCurrentPageReport]="false"
+          [showFirstLastIcon]="true"
+          [showPageLinks]="true"
+          [showJumpToPageDropdown]="false"
+          [showJumpToPageInput]="false"
+          [rowsPerPageOptions]="[]"
+          styleClass="mt-5 border-none bg-transparent px-0"
+          (onPageChange)="handlePageChange($event)" />
+      } @else {
+        <p class="text-sm text-slate-500">No hay usuarios para este filtro.</p>
+      }
+    </div>
+  </article>
+</section>

@@ -1,0 +1,37 @@
+<nav class="border-b border-[var(--primary-uml-dark)] bg-[var(--primary-uml)] text-white shadow-md">
+  <div class="flex items-center justify-between px-6 xl:px-10"
+    [class.py-3]="compact()"
+    [class.py-5]="!compact()">
+    <div class="flex items-center gap-4">
+      <div class="flex items-center justify-center rounded-2xl bg-white/18 text-white"
+        [class.h-9]="compact()"
+        [class.w-9]="compact()"
+        [class.h-11]="!compact()"
+        [class.w-11]="!compact()">
+        <i [class]="icon() + (compact() ? ' text-lg' : ' text-xl')"></i>
+      </div>
+      <div>
+        <p class="font-semibold tracking-tight text-white"
+          [class.text-lg]="compact()"
+          [class.text-xl]="!compact()">{{ title() }}</p>
+        @if (subtitle()) {
+          <p class="text-violet-100"
+            [class.text-xs]="compact()"
+            [class.text-sm]="!compact()">{{ subtitle() }}</p>
+        }
+      </div>
+    </div>
+    <div class="flex items-center gap-4">
+      @if (badgeText()) {
+        <span class="hidden text-sm font-medium text-violet-100 sm:block">{{ badgeText() }}</span>
+      }
+      <p-button
+        [icon]="actionIcon()"
+        [label]="actionLabel()"
+        (onClick)="action.emit()"
+        styleClass="border-white/25 bg-white/12 text-white"
+        size="small"
+      />
+    </div>
+  </div>
+</nav>

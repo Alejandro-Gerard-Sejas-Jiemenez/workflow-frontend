@@ -12,11 +12,11 @@ type RuntimeWindow = Window & {
 
 const authApiUrl =
   (window as RuntimeWindow).__env?.AUTH_API_URL ?? 'http://localhost:8080/api/auth';
+const tokenStorageKey = 'jwt_token';
 
 export interface UserInfo {
   id: string;
   nombre: string;
-  apellido: string;
   rol: string;
   email: string;
 }
@@ -40,7 +40,7 @@ export class AuthService {
     return this.http.post<any>(`${this.apiUrl}/api/auth/login`, credentials).pipe(
       tap(response => {
         if (response.token) {
-          localStorage.setItem('jwt_token', response.token);
+          sessionStorage.setItem(tokenStorageKey, response.token);
           this.decodeAndSetUser(response.token);
         }
       })
@@ -48,13 +48,13 @@ export class AuthService {
   }
 
   logout(): void {
-    localStorage.removeItem('jwt_token');
+    sessionStorage.removeItem(tokenStorageKey);
     this.currenUserSubject.next(null);
     this.router.navigate(['/home']);
   }
 
   getToken(): string | null {
-    return localStorage.getItem('jwt_token');
+    return sessionStorage.getItem(tokenStorageKey);
   }
 
   getUserRole(): string | null {
@@ -81,7 +81,6 @@ export class AuthService {
     const userInfo: UserInfo = {
       id: decoded.id,
       nombre: decoded.nombre,
-      apellido: decoded.apellido,
       rol: decoded.rol,
       email: decoded.sub
     };

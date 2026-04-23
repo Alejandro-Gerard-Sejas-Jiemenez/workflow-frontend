@@ -1,0 +1,40 @@
+<form class="mt-4 grid gap-3 rounded-lg border border-violet-100 bg-violet-50 p-4 md:grid-cols-2" [formGroup]="form" (ngSubmit)="submit()">
+  <div>
+    <input class="w-full rounded-lg border border-gray-200 px-3 py-2 text-sm" type="text" formControlName="nombre" placeholder="Nombre" />
+    @if (form.controls.nombre.touched && form.controls.nombre.invalid) {
+      <p class="mt-1 text-xs text-red-600">El nombre es obligatorio.</p>
+    }
+  </div>
+  <div>
+    <select class="w-full rounded-lg border border-gray-200 px-3 py-2 text-sm" formControlName="departamento">
+      <option value="">Selecciona un departamento</option>
+      @for (department of departments; track department) {
+        <option [value]="department">{{ department }}</option>
+      }
+    </select>
+    @if (form.controls.departamento.touched && form.controls.departamento.invalid) {
+      <p class="mt-1 text-xs text-red-600">Selecciona un departamento.</p>
+    }
+  </div>
+  <div class="md:col-span-2">
+    <select class="w-full rounded-lg border border-gray-200 px-3 py-2 text-sm" formControlName="rolId">
+      <option value="">Selecciona un rol</option>
+      @for (role of roles(); track role.id) {
+        <option [value]="role.id">{{ role.name }}</option>
+      }
+    </select>
+    @if (form.controls.rolId.touched && form.controls.rolId.invalid) {
+      <p class="mt-1 text-xs text-red-600">Selecciona un rol.</p>
+    }
+  </div>
+
+  <div class="flex gap-2 md:col-span-2">
+    <p-button
+      type="submit"
+      label="Guardar cambios"
+      icon="pi pi-check"
+      size="small"
+      [disabled]="form.invalid || !roles().length" />
+    <p-button type="button" label="Cancelar" icon="pi pi-times" [outlined]="true" size="small" (onClick)="cancelEdit.emit()" />
+  </div>
+</form>

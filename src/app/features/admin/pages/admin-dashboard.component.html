@@ -1,25 +1,34 @@
-<div class="flex h-screen flex-col bg-gray-50">
-  <nav class="flex items-center justify-between bg-violet-900 px-6 py-4 text-white shadow-md">
-    <div class="flex items-center gap-3">
-      <i class="pi pi-cog text-2xl"></i>
-      <span class="text-xl font-bold tracking-tight">Administración Central</span>
-    </div>
-    <div class="flex items-center gap-4">
-      <span class="text-sm font-medium">Panel de Control: Admin</span>
-      <p-button
-        icon="pi pi-sign-out"
-        label="Logout"
-        (onClick)="logout()"
-        class="text-white"
-        [text]="true"
-        severity="secondary"
-        size="small"
-      />
-    </div>
-  </nav>
+<div class="min-h-screen bg-slate-50">
+  <app-page-header
+    icon="pi pi-cog"
+    title="Administración central"
+    subtitle="Gestiona usuarios, roles y accesos del sistema."
+    [badgeText]="'Panel de control: ' + ((user$ | async)?.nombre ?? 'Admin')"
+    actionLabel="Salir"
+    (action)="logout()" />
 
-  <main class="p-8">
-    <app-admin-metrics [metrics]="metrics" />
-    <app-admin-access-panel />
+  <main class="flex flex-col gap-6 px-6 py-8 xl:px-10">
+    @if (dashboard$ | async; as dashboard) {
+      <div class="grid gap-6 2xl:grid-cols-[0.78fr_1.22fr]">
+        <app-admin-user-creator
+          [roles]="dashboard.roles"
+          (createUser)="createUser($event)" />
+        <app-admin-user-management
+          [roles]="dashboard.roles"
+          [activeUsers]="dashboard.activeUsers"
+          [inactiveUsers]="dashboard.inactiveUserList"
+          (updateUser)="updateUser($event)"
+          (deactivateUser)="deactivateUser($event)"
+          (restoreUser)="restoreUser($event)" />
+      </div>
+    } @else {
+      <div class="grid gap-6 2xl:grid-cols-[0.78fr_1.22fr]">
+        <app-admin-user-creator [roles]="emptyState.roles" />
+        <app-admin-user-management
+          [roles]="emptyState.roles"
+          [activeUsers]="emptyState.activeUsers"
+          [inactiveUsers]="emptyState.inactiveUserList" />
+      </div>
+    }
   </main>
 </div>
