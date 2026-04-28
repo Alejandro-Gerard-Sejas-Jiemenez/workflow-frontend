@@ -1,0 +1,254 @@
+:host {
+  display: block;
+  width: max-content;
+  height: max-content;
+}
+
+.workflow-node-shell {
+  position: relative;
+  width: max-content;
+  height: max-content;
+}
+
+.workflow-node-shell--selected .workflow-node:not(.workflow-node--start):not(.workflow-node--end) {
+  box-shadow: 0 0 0 3px rgba(124, 58, 237, 0.18);
+}
+
+.workflow-node {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  position: relative;
+  z-index: 1;
+}
+
+.workflow-node__body {
+  width: 170px;
+  min-height: 64px;
+  border: 2px solid #334155;
+  border-radius: 14px;
+  background: #f8fafc;
+  padding: 10px 14px;
+  text-align: center;
+}
+
+.workflow-node__title {
+  margin: 0;
+  font-size: 13px;
+  font-weight: 600;
+  color: #1e293b;
+}
+
+.workflow-node__role {
+  margin: 0;
+  font-size: 10px;
+  color: #64748b;
+}
+
+.workflow-node__initial {
+  width: 38px;
+  height: 38px;
+  border-radius: 999px;
+  background: #334155;
+}
+
+.workflow-node__final {
+  display: grid;
+  place-items: center;
+  width: 42px;
+  height: 42px;
+  border: 3px solid #334155;
+  border-radius: 999px;
+  background: #fff;
+}
+
+.workflow-node__final-core {
+  width: 22px;
+  height: 22px;
+  border-radius: 999px;
+  background: #334155;
+}
+
+.workflow-node__flow-final {
+  width: 40px;
+  height: 40px;
+  border: 2px solid #334155;
+  border-radius: 999px;
+  background: #fff;
+  position: relative;
+}
+
+.workflow-node__flow-final::before,
+.workflow-node__flow-final::after {
+  content: '';
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 24px;
+  height: 2px;
+  background: #334155;
+}
+
+.workflow-node__flow-final::before {
+  transform: translate(-50%, -50%) rotate(45deg);
+}
+
+.workflow-node__flow-final::after {
+  transform: translate(-50%, -50%) rotate(-45deg);
+}
+
+.workflow-node__diamond {
+  width: 60px;
+  height: 60px;
+  background: #fff;
+  border: 2px solid #334155;
+  transform: rotate(45deg);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.workflow-node__diamond-label {
+  transform: rotate(-45deg);
+  font-size: 11px;
+  font-weight: bold;
+  text-align: center;
+  max-width: 60px;
+  word-wrap: break-word;
+}
+
+.workflow-node__bar {
+  width: 120px;
+  height: 10px;
+  background: #334155;
+  border-radius: 4px;
+}
+
+.workflow-node__bar--vertical {
+  width: 10px;
+  height: 120px;
+}
+
+.workflow-node__signal {
+  min-width: 120px;
+  padding: 10px 20px;
+  background: #f8fafc;
+  border: 2px solid #334155;
+  position: relative;
+  clip-path: polygon(0% 0%, 85% 0%, 100% 50%, 85% 100%, 0% 100%);
+}
+
+.workflow-node__signal--send {
+  clip-path: polygon(0% 0%, 100% 0%, 100% 100%, 0% 100%, 15% 50%);
+  padding-left: 30px;
+}
+
+.workflow-node__note {
+  width: 150px;
+  min-height: 60px;
+  background: #fef9c3;
+  border: 1px solid #eab308;
+  padding: 10px;
+  font-size: 12px;
+  font-style: italic;
+  position: relative;
+  clip-path: polygon(0 0, 85% 0, 100% 15%, 100% 100%, 0 100%);
+}
+
+.workflow-node__note::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  right: 0;
+  width: 15%;
+  height: 15%;
+  background: rgba(0, 0, 0, 0.1);
+}
+
+.workflow-node__port {
+  --ngd-port-size: 14px;
+  --ngd-port-border-color: #7c3aed;
+  width: var(--ngd-port-size) !important;
+  height: var(--ngd-port-size) !important;
+  background-color: transparent !important;
+  border-color: transparent !important;
+  cursor: crosshair;
+  z-index: 10;
+  /* El motor de ng-diagram posiciona el <ng-diagram-port> automáticamente mediante estilos en línea */
+}
+
+/* Usamos un pseudo-elemento para el diseño visual y no romper el 'transform' en línea de ng-diagram */
+.workflow-node__port::after {
+  content: '';
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 10px;
+  height: 10px;
+  background: white;
+  border: 2px solid var(--ngd-port-border-color);
+  border-radius: 50%;
+  transform: translate(-50%, -50%) scale(0);
+  opacity: 0;
+  transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+  pointer-events: none;
+}
+
+/* Mostrar puertos cuando el nodo está seleccionado o en hover */
+.workflow-node-shell:hover .workflow-node__port::after,
+.workflow-node-shell--selected .workflow-node__port::after {
+  transform: translate(-50%, -50%) scale(1);
+  opacity: 1;
+}
+
+.workflow-node__port:hover::after {
+  width: 16px;
+  height: 16px;
+  background: var(--ngd-port-border-color);
+}
+
+.workflow-node__swimlane {
+  display: flex;
+  flex-direction: column;
+  border: 2px solid #334155;
+  background: rgba(241, 245, 249, 0.3);
+  border-radius: 4px;
+  overflow: visible;
+  pointer-events: auto;
+}
+
+.workflow-node__swimlane-header {
+  height: 36px;
+  background: #334155;
+  color: #fff;
+  display: flex;
+  align-items: center;
+  padding: 0 16px;
+  font-size: 13px;
+  font-weight: 700;
+  letter-spacing: 0.5px;
+  text-transform: uppercase;
+  pointer-events: auto;
+}
+
+.workflow-node__swimlane-select {
+  background: transparent;
+  border: none;
+  color: #fff;
+  font-size: 12px;
+  font-weight: bold;
+  width: 100%;
+  cursor: pointer;
+  outline: none;
+}
+
+.workflow-node__swimlane-select option {
+  background: #334155;
+  color: #fff;
+}
+
+.workflow-node__swimlane-body {
+  flex: 1;
+  min-height: 150px;
+}

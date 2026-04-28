@@ -7,28 +7,61 @@
     actionLabel="Salir"
     (action)="logout()" />
 
+  <nav class="flex border-b border-slate-200 bg-white px-6 xl:px-10">
+    <button 
+      (click)="activeTab = 'usuarios'"
+      [class.border-violet-600]="activeTab === 'usuarios'"
+      [class.text-violet-600]="activeTab === 'usuarios'"
+      class="border-b-2 border-transparent px-6 py-4 text-sm font-semibold transition hover:text-violet-600">
+      Usuarios
+    </button>
+    <button 
+      (click)="activeTab = 'departamentos'"
+      [class.border-violet-600]="activeTab === 'departamentos'"
+      [class.text-violet-600]="activeTab === 'departamentos'"
+      class="border-b-2 border-transparent px-6 py-4 text-sm font-semibold transition hover:text-violet-600">
+      Departamentos
+    </button>
+    <button 
+      (click)="activeTab = 'bitacora'"
+      [class.border-violet-600]="activeTab === 'bitacora'"
+      [class.text-violet-600]="activeTab === 'bitacora'"
+      class="border-b-2 border-transparent px-6 py-4 text-sm font-semibold transition hover:text-violet-600">
+      Bitácora
+    </button>
+  </nav>
+
   <main class="flex flex-col gap-6 px-6 py-8 xl:px-10">
     @if (dashboard$ | async; as dashboard) {
-      <div class="grid gap-6 2xl:grid-cols-[0.78fr_1.22fr]">
-        <app-admin-user-creator
-          [roles]="dashboard.roles"
-          (createUser)="createUser($event)" />
-        <app-admin-user-management
-          [roles]="dashboard.roles"
-          [activeUsers]="dashboard.activeUsers"
-          [inactiveUsers]="dashboard.inactiveUserList"
-          (updateUser)="updateUser($event)"
-          (deactivateUser)="deactivateUser($event)"
-          (restoreUser)="restoreUser($event)" />
-      </div>
+      @if (activeTab === 'usuarios') {
+        <div class="grid gap-6 2xl:grid-cols-[0.78fr_1.22fr]">
+          <app-admin-user-creator
+            [roles]="dashboard.roles"
+            [departments]="dashboard.departments"
+            (createUser)="createUser($event)" />
+          <app-admin-user-management
+            [roles]="dashboard.roles"
+            [activeUsers]="dashboard.activeUsers"
+            [inactiveUsers]="dashboard.inactiveUserList"
+            [departments]="dashboard.departments"
+            (updateUser)="updateUser($event)"
+            (deactivateUser)="deactivateUser($event)"
+            (restoreUser)="restoreUser($event)" />
+        </div>
+      } @else if (activeTab === 'departamentos') {
+        <app-admin-department-management 
+          [departments]="dashboard.departments"
+          (createDepartment)="createDepartment($event)"
+          (updateDepartment)="updateDepartment($event)"
+          (deleteDepartment)="deleteDepartment($event)" />
+      } @else if (activeTab === 'bitacora') {
+        <app-admin-audit-log [logs]="dashboard.auditLogs" />
+      }
     } @else {
-      <div class="grid gap-6 2xl:grid-cols-[0.78fr_1.22fr]">
-        <app-admin-user-creator [roles]="emptyState.roles" />
-        <app-admin-user-management
-          [roles]="emptyState.roles"
-          [activeUsers]="emptyState.activeUsers"
-          [inactiveUsers]="emptyState.inactiveUserList" />
+      <div class="flex items-center justify-center p-12">
+        <i class="pi pi-spin pi-spinner text-4xl text-violet-600"></i>
       </div>
     }
+
   </main>
 </div>

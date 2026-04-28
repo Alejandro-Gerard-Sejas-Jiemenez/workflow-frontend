@@ -11,7 +11,7 @@ type RuntimeWindow = Window & {
 };
 
 const authApiUrl =
-  (window as RuntimeWindow).__env?.AUTH_API_URL ?? 'http://localhost:8080/api/auth';
+  (window as RuntimeWindow).__env?.AUTH_API_URL ?? 'http://localhost:8081/api/auth';
 const tokenStorageKey = 'jwt_token';
 
 export interface UserInfo {
@@ -19,6 +19,7 @@ export interface UserInfo {
   nombre: string;
   rol: string;
   email: string;
+  departamento?: string;
 }
 
 @Injectable({
@@ -37,7 +38,7 @@ export class AuthService {
   }
 
   login(credentials: { email: string; password: string }): Observable<any> {
-    return this.http.post<any>(`${this.apiUrl}/api/auth/login`, credentials).pipe(
+    return this.http.post<any>(`${this.apiUrl}/login`, credentials).pipe(
       tap(response => {
         if (response.token) {
           sessionStorage.setItem(tokenStorageKey, response.token);
@@ -82,7 +83,8 @@ export class AuthService {
       id: decoded.id,
       nombre: decoded.nombre,
       rol: decoded.rol,
-      email: decoded.sub
+      email: decoded.sub,
+      departamento: decoded.departamento
     };
     this.currenUserSubject.next(userInfo);
   }
@@ -98,6 +100,9 @@ export class AuthService {
         break;
       case 'ROLE_EMPLEADO':
         this.router.navigate(['/employee']);
+        break;
+      case 'ROLE_CLIENTE':
+        this.router.navigate(['/client']);
         break;
       default:
         this.router.navigate(['/home']);

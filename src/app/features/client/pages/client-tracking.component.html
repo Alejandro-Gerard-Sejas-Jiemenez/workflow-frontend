@@ -1,0 +1,110 @@
+<div class="flex min-h-screen flex-col bg-slate-50">
+  <app-page-header
+    icon="pi pi-map-marker"
+    title="Seguimiento de Trámite"
+    [subtitle]="'Solicitud #' + (tarea()?.id?.substring(0,8) || '')"
+    [badgeText]="tarea()?.estado || ''"
+    actionLabel="Volver"
+    (action)="goBack()" />
+
+  <main class="flex-1 p-6 md:p-10 max-w-2xl mx-auto w-full">
+    
+    <!-- Card Principal (Estilo Móvil) -->
+    <div class="bg-white rounded-[2.5rem] p-8 shadow-xl shadow-slate-200/50 border border-slate-100 overflow-hidden relative">
+      
+      <!-- Indicador de Estado Superior -->
+      <div class="flex items-center justify-between mb-10">
+        <div>
+          <p class="text-[10px] font-bold uppercase tracking-widest text-slate-400 mb-1">Estado Actual</p>
+          <h3 class="text-xl font-black text-slate-900">{{ tarea()?.estado }}</h3>
+        </div>
+        <div class="h-16 w-16 rounded-2xl bg-violet-600 text-white flex items-center justify-center shadow-lg shadow-violet-200">
+          <i class="pi pi-send text-2xl"></i>
+        </div>
+      </div>
+
+      <!-- Barra de Progreso -->
+      <div class="relative h-3 w-full bg-slate-100 rounded-full mb-12">
+        <div class="absolute top-0 left-0 h-full bg-violet-600 rounded-full transition-all duration-1000 shadow-sm" [style.width]="getProgressWidth()"></div>
+        <!-- Puntos clave -->
+        <div class="absolute -top-1 left-0 h-5 w-5 rounded-full border-4 border-white bg-violet-600 shadow-md"></div>
+        <div class="absolute -top-1 right-0 h-5 w-5 rounded-full border-4 border-white bg-slate-200 shadow-md" [class.bg-violet-600]="tarea()?.estado === 'COMPLETADO'"></div>
+      </div>
+
+      <!-- Timeline de Pasos -->
+      <div class="space-y-10 relative">
+        <div class="absolute top-2 left-4 bottom-2 w-0.5 bg-slate-100"></div>
+
+        <!-- Paso 0: Registro -->
+        <div class="flex gap-6 relative">
+          <div class="h-8 w-8 rounded-full border-4 border-white bg-violet-600 shadow-sm flex items-center justify-center text-white z-10">
+            <i class="pi pi-check text-[10px]"></i>
+          </div>
+          <div>
+            <h4 class="font-bold text-slate-900">Solicitud Registrada</h4>
+            <p class="text-xs text-slate-400">{{ tarea()?.auditoria?.fechaCreacion | date:'short' }}</p>
+          </div>
+        </div>
+
+        <!-- Pasos Intermedios -->
+        @for (p of workflow()?.pasos; track p.id) {
+          <div class="flex gap-6 relative">
+            <div class="h-8 w-8 rounded-full border-4 border-white shadow-sm flex items-center justify-center z-10"
+              [class]="tarea()?.pasoActual >= p.orden ? 'bg-violet-600 text-white' : 'bg-slate-100 text-slate-400'">
+              @if(tarea()?.pasoActual > p.orden){ <i class="pi pi-check text-[10px]"></i> }
+              @else { <span class="text-[10px] font-bold">{{ p.orden }}</span> }
+            </div>
+            <div>
+              <h4 class="font-bold" [class]="tarea()?.pasoActual >= p.orden ? 'text-slate-900' : 'text-slate-300'">{{ p.nombre }}</h4>
+              <p class="text-xs text-slate-400">{{ p.departamento }}</p>
+              @if (tarea()?.pasoActual === p.orden && tarea()?.estado === 'EN_PROGRESO') {
+                <span class="inline-block mt-2 px-3 py-1 bg-violet-50 text-violet-600 text-[10px] font-bold rounded-full animate-pulse">EN PROCESO</span>
+              }
+            </div>
+          </div>
+        }
+
+        <!-- Fin -->
+        <div class="flex gap-6 relative">
+          <div class="h-8 w-8 rounded-full border-4 border-white shadow-sm flex items-center justify-center z-10"
+            [class]="tarea()?.estado === 'COMPLETADO' ? 'bg-emerald-500 text-white' : 'bg-slate-100 text-slate-400'">
+            <i class="pi pi-flag text-[10px]"></i>
+          </div>
+          <div>
+            <h4 class="font-bold" [class]="tarea()?.estado === 'COMPLETADO' ? 'text-emerald-600' : 'text-slate-300'">Finalización</h4>
+            @if(tarea()?.estado === 'COMPLETADO'){
+              <p class="text-xs text-slate-400">Trámite concluido exitosamente.</p>
+            }
+          </div>
+        </div>
+
+      </div>
+
+      <!-- Footer Detalle -->
+      <div class="mt-12 pt-8 border-t border-slate-100 grid grid-cols-2 gap-4">
+        <div class="p-4 bg-slate-50 rounded-2xl">
+          <p class="text-[10px] font-bold text-slate-400 uppercase">Documentos</p>
+          <p class="font-bold text-slate-700">{{ tarea()?.documentosUrl?.length || 0 }} adjuntos</p>
+        </div>
+        <div class="p-4 bg-slate-50 rounded-2xl">
+          <p class="text-[10px] font-bold text-slate-400 uppercase">Prioridad</p>
+          <p class="font-bold" [class]="tarea()?.prioridad === 'ALTA' ? 'text-rose-500' : 'text-slate-700'">{{ tarea()?.prioridad }}</p>
+        </div>
+      </div>
+
+    </div>
+
+    <!-- Botones Acción Móvil -->
+    <div class="mt-8 grid grid-cols-1 gap-4">
+      @if (tarea()?.estado === 'CORRECCION_REQUERIDA') {
+        <button (click)="router.navigate(['/client/corregir', tarea()?.id])" class="w-full h-16 rounded-2xl bg-amber-500 text-white font-bold shadow-lg shadow-amber-200">
+          Corregir Solicitud
+        </button>
+      }
+      <button (click)="goBack()" class="w-full h-16 rounded-2xl border border-slate-200 bg-white text-slate-600 font-bold">
+        Volver al Panel
+      </button>
+    </div>
+
+  </main>
+</div>

@@ -1,0 +1,99 @@
+<div class="flex min-h-screen flex-col bg-slate-50">
+  <app-page-header
+    icon="pi pi-user"
+    title="Portal del Ciudadano"
+    [subtitle]="'Hola, ' + (user$ | async)?.nombre"
+    [badgeText]="(myRequests().length) + ' Trámites'"
+    actionLabel="Cerrar Sesión"
+    (action)="logout()" />
+
+  <!-- Notificaciones Rápidas -->
+  @if (notificationService.getUnreadCount() > 0) {
+    <div class="mx-6 mt-4 p-4 bg-violet-600 rounded-3xl flex items-center justify-between text-white shadow-lg shadow-violet-200">
+      <div class="flex items-center gap-3">
+        <i class="pi pi-bell animate-bounce"></i>
+        <span class="text-sm font-bold">Tienes {{ notificationService.getUnreadCount() }} notificaciones pendientes</span>
+      </div>
+      <button (click)="activeTab = 'my-requests'" class="px-4 py-2 bg-white/20 rounded-xl text-xs font-bold hover:bg-white/30 transition">Ver mis trámites</button>
+    </div>
+  }
+
+  <nav class="flex border-b border-slate-200 bg-white px-6 xl:px-10">
+    <button 
+      (click)="activeTab = 'available'"
+      [class.border-violet-600]="activeTab === 'available'"
+      [class.text-violet-600]="activeTab === 'available'"
+      class="border-b-2 border-transparent px-6 py-4 text-sm font-semibold transition hover:text-violet-600">
+      Trámites Disponibles
+    </button>
+    <button 
+      (click)="activeTab = 'my-requests'"
+      [class.border-violet-600]="activeTab === 'my-requests'"
+      [class.text-violet-600]="activeTab === 'my-requests'"
+      class="border-b-2 border-transparent px-6 py-4 text-sm font-semibold transition hover:text-violet-600">
+      Mis Solicitudes
+    </button>
+  </nav>
+
+  <main class="mx-auto w-full max-w-7xl p-8">
+    
+    <!-- Tab 1: Disponibles -->
+    @if (activeTab === 'available') {
+      <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+        @for (w of workflows(); track w.id) {
+          <div class="group relative rounded-[2rem] bg-white p-8 shadow-sm border border-slate-100 hover:shadow-xl hover:shadow-violet-900/5 transition-all duration-300">
+            <div class="mb-6 flex h-14 w-14 items-center justify-center rounded-2xl bg-violet-50 text-violet-600 group-hover:bg-violet-600 group-hover:text-white transition-colors">
+              <i class="pi pi-file-o text-2xl"></i>
+            </div>
+            <h3 class="text-xl font-bold text-slate-900 mb-2">{{ w.nombre }}</h3>
+            <p class="text-sm text-slate-500 line-clamp-2 mb-8">{{ w.descripcion || 'Sin descripción disponible.' }}</p>
+            
+            <button (click)="iniciar(w.id)" class="w-full h-12 rounded-xl bg-slate-900 text-white text-sm font-bold transition hover:bg-slate-800 active:scale-95">
+              Iniciar Trámite
+            </button>
+          </div>
+        }
+      </div>
+    }
+
+    <!-- Tab 2: Mis Solicitudes -->
+    @if (activeTab === 'my-requests') {
+      <div class="space-y-4">
+        @for (t of myRequests(); track t.id) {
+          <div class="flex items-center gap-6 rounded-3xl bg-white p-6 shadow-sm border border-slate-100 hover:border-violet-200 transition">
+            <div class="h-12 w-12 flex items-center justify-center rounded-xl bg-slate-50 text-slate-400">
+              <i class="pi pi-history"></i>
+            </div>
+            
+            <div class="flex-1 min-w-0">
+              <div class="flex items-center gap-2 mb-1">
+                <span class="text-xs font-bold uppercase tracking-widest text-slate-400">Solicitud #{{ t.id.substring(0,8) }}</span>
+                <span class="px-2 py-0.5 rounded-full text-[10px] font-bold uppercase tracking-wider" 
+                  [class]="t.estado === 'CORRECCION_REQUERIDA' ? 'bg-amber-100 text-amber-700' : 'bg-violet-100 text-violet-700'">
+                  {{ t.estado }}
+                </span>
+              </div>
+              <h4 class="text-base font-bold text-slate-900 truncate">Workflow ID: {{ t.workflowId }}</h4>
+            </div>
+
+            <div class="flex gap-3">
+              @if (t.estado === 'CORRECCION_REQUERIDA') {
+                <button (click)="corregir(t.id)" class="px-4 py-2 rounded-xl bg-amber-500 text-white text-xs font-bold hover:bg-amber-600 transition shadow-lg shadow-amber-200">
+                  Corregir Ahora
+                </button>
+              }
+              <button (click)="verDetalle(t.id)" class="px-4 py-2 rounded-xl border border-slate-200 text-slate-600 text-xs font-bold hover:bg-slate-50 transition">
+                Ver Seguimiento
+              </button>
+            </div>
+          </div>
+        } @empty {
+          <div class="py-20 text-center bg-white rounded-[3rem] border border-slate-100">
+            <i class="pi pi-inbox text-5xl text-slate-200 mb-4"></i>
+            <p class="text-slate-500 font-medium">Aún no has realizado ninguna solicitud.</p>
+          </div>
+        }
+      </div>
+    }
+  </main>
+</div>

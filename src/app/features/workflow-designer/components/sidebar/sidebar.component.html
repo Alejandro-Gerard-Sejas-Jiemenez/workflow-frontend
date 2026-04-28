@@ -1,0 +1,70 @@
+<aside class="editor-sidebar">
+  <div class="editor-sidebar__rail">
+    <button (click)="setCategory('shapes')" class="sidebar-nav-button"
+      [class.sidebar-nav-button--active]="activeCategory() === 'shapes'"><i class="pi pi-stop"></i></button>
+    <button (click)="setCategory('patterns')" class="sidebar-nav-button"
+      [class.sidebar-nav-button--active]="activeCategory() === 'patterns'"><i class="pi pi-sitemap"></i></button>
+    <button (click)="setCategory('ai')" class="sidebar-nav-button"
+      [class.sidebar-nav-button--active]="activeCategory() === 'ai'"><i class="pi pi-sparkles"></i></button>
+  </div>
+
+  @if (isPanelOpen()) {
+  <section class="editor-panel editor-sidebar__flyout">
+    <div class="editor-panel__header">
+      <div class="flex items-center gap-4">
+        <h4 class="text-sm font-bold cursor-pointer transition-colors"
+          [class.text-slate-800]="activeCategory() === 'shapes'" [class.text-slate-400]="activeCategory() !== 'shapes'"
+          (click)="activeCategory.set('shapes')">Figuras UML</h4>
+        <span class="text-xs font-bold cursor-pointer transition-colors"
+          [class.text-slate-800]="activeCategory() === 'patterns'"
+          [class.text-slate-400]="activeCategory() !== 'patterns'" (click)="activeCategory.set('patterns')">Base</span>
+      </div>
+      <button (click)="closePanel()" class="editor-flyout-close"><i class="pi pi-times"></i></button>
+    </div>
+
+    <div class="editor-panel__body">
+      @if (activeCategory() === 'shapes') {
+      <div class="shape-grid">
+        @for (item of paletteItems(); track $index) {
+        <ng-diagram-palette-item [item]="item">
+          <div class="shape-tile shape-tile--draggable">
+            <div class="palette-card__shape palette-card__shape--hero"
+              [ngClass]="'palette-card__shape--' + item.data.kind"></div>
+            <span class="shape-tile__name">{{ item.data.typeLabel }}</span>
+          </div>
+
+          <ng-diagram-palette-item-preview>
+            <div class="shape-tile shape-tile--dragging shadow-xl" [style.width.px]="item.type === 'lane' ? 400 : null"
+              [style.height.px]="item.type === 'lane' ? 100 : null">
+              <div class="palette-card__shape palette-card__shape--hero"
+                [ngClass]="'palette-card__shape--' + item.type"></div>
+              <span class="shape-tile__name">{{ item.data.typeLabel }}</span>
+            </div>
+          </ng-diagram-palette-item-preview>
+        </ng-diagram-palette-item>
+        }
+      </div>
+      } @else if (activeCategory() === 'patterns') {
+      <div class="pattern-list">
+        @for (p of supportedPatterns(); track $index) {
+        <button (click)="insertPattern.emit(p.kind)" class="pattern-row">
+          <strong>{{ p.title }}</strong>
+          <span>{{ p.description }}</span>
+        </button>
+        }
+      </div>
+      } @else {
+      <div class="ai-copilot-panel">
+        <textarea [ngModel]="aiPrompt()" (ngModelChange)="aiPrompt.set($event)" class="ai-input" rows="4"></textarea>
+        <button (click)="onPropose()" [disabled]="isGeneratingAi() || !aiPrompt()" class="ai-generate-btn">
+          {{ isGeneratingAi() ? 'Generando...' : 'Generar Propuesta' }}
+        </button>
+        @if (aiProposal()) {
+        <button (click)="applyAiProposal.emit()" class="ai-apply-btn">Aplicar Propuesta</button>
+        }
+      </div>
+      }
+    </div>
+  </section>
+  }
+</aside>

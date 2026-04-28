@@ -1,0 +1,42 @@
+<div class="flex h-screen flex-col bg-slate-50 overflow-hidden">
+  <app-page-header
+    icon="pi pi-palette"
+    title="Editor de Workflow"
+    subtitle="Edita el flujo seleccionado y colabora en tiempo real."
+    [compact]="true"
+    [badgeText]="'Hola, ' + ((user$ | async)?.nombre ?? 'Usuario')"
+    actionLabel="Salir"
+    (action)="logout()" />
+
+  @if (selectedWorkflow) {
+    <app-designer-workflow-editor-header
+      [workflow]="selectedWorkflow"
+      [collaborators]="collaborators"
+      [availableDesigners]="availableDesigners"
+      [invitationStatus]="invitationStatus"
+      (goBack)="goBack()"
+      (save)="save()"
+      (toggleState)="toggleState()"
+      (invite)="invite($event)" />
+  }
+
+  <main class="flex min-h-0 flex-1 flex-col overflow-hidden px-4 pb-4 mt-3">
+    @if (selectedWorkflow) {
+      <app-ng-diagram-workflow-editor
+        #editor
+        class="flex-1 bg-white rounded-[2rem] border border-slate-200 overflow-hidden shadow-xl"
+        [workflow]="selectedWorkflow"
+        [departments]="departments"
+        (saveDiagram)="save()"
+        (diagramDraftChanged)="diagramDraft$.next($event)" />
+    } @else if (isLoading) {
+      <div class="flex flex-1 items-center justify-center bg-white rounded-[2rem] border border-slate-200 shadow-sm">
+        <p class="text-sm text-slate-600 font-medium">Cargando editor...</p>
+      </div>
+    } @else {
+      <div class="flex flex-1 items-center justify-center bg-white rounded-[2rem] border border-slate-200 shadow-sm">
+        <p class="text-sm text-slate-600">{{ loadError || 'No se pudo cargar el workflow.' }}</p>
+      </div>
+    }
+  </main>
+</div>

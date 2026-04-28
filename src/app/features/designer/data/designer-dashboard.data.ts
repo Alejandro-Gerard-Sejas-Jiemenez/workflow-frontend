@@ -15,6 +15,7 @@ export type DesignerWorkflow = {
   id: string;
   nombre: string;
   descripcion: string;
+  estado: string;
   pasos: DesignerWorkflowStep[];
   diagramData: string | null;
   ownerUserId: string | null;

@@ -10,12 +10,29 @@ export type AdminUser = {
   name: string;
   email: string;
   role: string;
-  department: string;
+  departments: string[];
 };
 
 export type AdminRole = {
   id: string;
   name: string;
+};
+
+export type AdminDepartment = {
+  id?: string;
+  nombre: string;
+  descripcion?: string;
+  estado?: string;
+};
+
+export type AdminAuditLog = {
+  id: string;
+  usuarioId: string;
+  usuarioNombre: string;
+  accion: string;
+  entidad: string;
+  fecha: string;
+  detalles: string;
 };
 
 export const ADMIN_DEPARTMENTS = [
@@ -31,14 +48,14 @@ export type AdminUserCreate = {
   nombre: string;
   email: string;
   password: string;
-  departamento: string;
+  departamentos: string[];
   rolId: string;
 };
 
 export type AdminUserUpdate = {
   id: string;
   nombre: string;
-  departamento: string;
+  departamentos: string[];
   rolId: string;
 };
 
@@ -52,6 +69,8 @@ export type AdminNotification = {
 export type AdminDashboardVm = {
   metrics: AdminMetric[];
   roles: AdminRole[];
+  departments: AdminDepartment[];
+  auditLogs: AdminAuditLog[];
   inactiveUsers: number;
   activeUsers: AdminUser[];
   inactiveUserList: AdminUser[];
@@ -66,6 +85,8 @@ export const EMPTY_ADMIN_DASHBOARD: AdminDashboardVm = {
     { title: 'Notificaciones', value: '0', icon: 'pi pi-bell', iconClass: 'bg-orange-100 text-orange-600' }
   ],
   roles: [],
+  departments: [],
+  auditLogs: [],
   inactiveUsers: 0,
   activeUsers: [],
   inactiveUserList: [],

@@ -50,18 +50,23 @@
         }
       </div>
 
-      <div>
-        <label class="mb-1.5 block text-sm font-medium text-slate-700">Departamento *</label>
-        <select class="w-full rounded-xl border border-slate-200 bg-white px-4 py-3 text-sm text-slate-800 outline-none transition focus:border-violet-300 focus:ring-2 focus:ring-violet-100" formControlName="departamento">
-          <option value="">Selecciona un departamento</option>
-          @for (department of departments; track department) {
-            <option [value]="department">{{ department }}</option>
+      @if (!isClient()) {
+        <div>
+          <label class="mb-1.5 block text-sm font-medium text-slate-700">Departamentos *</label>
+          <p-multiSelect 
+            [options]="departments()" 
+            optionLabel="nombre" 
+            optionValue="nombre"
+            formControlName="departamentos"
+            placeholder="Selecciona uno o varios"
+            styleClass="w-full"
+            display="chip">
+          </p-multiSelect>
+          @if (form.controls.departamentos.touched && form.controls.departamentos.invalid) {
+            <p class="mt-1 text-xs text-red-600">Selecciona al menos un departamento.</p>
           }
-        </select>
-        @if (form.controls.departamento.touched && form.controls.departamento.invalid) {
-          <p class="mt-1 text-xs text-red-600">Selecciona un departamento.</p>
-        }
-      </div>
+        </div>
+      }
     </div>
 
     <div class="flex flex-col gap-3 pt-1 md:flex-row md:items-center">

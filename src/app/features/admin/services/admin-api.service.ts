@@ -8,7 +8,9 @@ import {
   AdminRole,
   AdminUser,
   AdminUserCreate,
-  AdminUserUpdate
+  AdminUserUpdate,
+  AdminDepartment,
+  AdminAuditLog
 } from '../data/admin-dashboard.data';
 
 type RuntimeWindow = Window & {
@@ -24,7 +26,7 @@ type UsuarioResponseDto = {
   id: string;
   email: string;
   nombre: string;
-  departamento: string;
+  departamentos: string[];
   rol: string;
   estadoConexion: boolean;
   ultimaConexion: string | null;
@@ -59,6 +61,8 @@ export class AdminApiService {
   private readonly rolesUrl = `${apiBaseUrl}/api/roles`;
   private readonly workflowsUrl = `${apiBaseUrl}/api/workflows`;
   private readonly notificacionesUrl = `${apiBaseUrl}/api/notificaciones`;
+  private readonly departamentosUrl = `${apiBaseUrl}/api/departamentos`;
+  private readonly bitacoraUrl = `${apiBaseUrl}/api/bitacora`;
 
   getDashboardData(): Observable<AdminDashboardVm> {
     return forkJoin({
@@ -66,13 +70,17 @@ export class AdminApiService {
       usuarios: this.http.get<UsuarioResponseDto[]>(this.usuariosUrl).pipe(catchError(() => of([]))),
       usuariosInactivos: this.http.get<UsuarioResponseDto[]>(`${this.usuariosUrl}/inactivos`).pipe(catchError(() => of([]))),
       workflows: this.http.get<WorkflowResponseDto[]>(this.workflowsUrl).pipe(catchError(() => of([]))),
-      notificaciones: this.http.get<NotificacionResponseDto[]>(this.notificacionesUrl).pipe(catchError(() => of([])))
+      notificaciones: this.http.get<NotificacionResponseDto[]>(this.notificacionesUrl).pipe(catchError(() => of([]))),
+      departamentos: this.http.get<AdminDepartment[]>(this.departamentosUrl).pipe(catchError(() => of([]))),
+      bitacora: this.http.get<AdminAuditLog[]>(this.bitacoraUrl).pipe(catchError(() => of([])))
     }).pipe(
-      map(({ roles, usuarios, usuariosInactivos, workflows, notificaciones }) => ({
+      map(({ roles, usuarios, usuariosInactivos, workflows, notificaciones, departamentos, bitacora }) => ({
         metrics: this.buildMetrics(usuarios, workflows, notificaciones),
         roles: roles
           .filter((role) => role.nombre !== 'ROLE_USER')
           .map((role) => this.mapRole(role)),
+        departments: departamentos,
+        auditLogs: bitacora,
         inactiveUsers: usuariosInactivos.length,
         activeUsers: usuarios.map((user) => this.mapUser(user)),
         inactiveUserList: usuariosInactivos.map((user) => this.mapUser(user)),
@@ -98,6 +106,23 @@ export class AdminApiService {
     const { id, ...payload } = user;
     return this.http.put<UsuarioResponseDto>(`${this.usuariosUrl}/${id}`, payload);
   }
+
+  getDepartments(): Observable<AdminDepartment[]> {
+    return this.http.get<AdminDepartment[]>(this.departamentosUrl);
+  }
+
+  createDepartment(dept: AdminDepartment): Observable<AdminDepartment> {
+    return this.http.post<AdminDepartment>(this.departamentosUrl, dept);
+  }
+
+  updateDepartment(dept: AdminDepartment): Observable<AdminDepartment> {
+    return this.http.put<AdminDepartment>(`${this.departamentosUrl}/${dept.id}`, dept);
+  }
+
+  deleteDepartment(id: string): Observable<void> {
+    return this.http.delete<void>(`${this.departamentosUrl}/${id}`);
+  }
+
 
   private buildMetrics(
     usuarios: UsuarioResponseDto[],
@@ -132,7 +157,7 @@ export class AdminApiService {
       name: user.nombre,
       email: user.email,
       role: this.formatRoleLabel(user.rol),
-      department: user.departamento
+      departments: user.departamentos || []
     };
   }
 

@@ -1,0 +1,31 @@
+.activity-board {
+  position: relative; display: flex; flex: 1 1 auto; width: 100%; min-width: 0; min-height: 0; height: 100%;
+  background: #f4f6fa; border-radius: 14px; overflow: hidden;
+}
+
+.activity-board__canvas { position: relative; display: flex; flex: 1 1 auto; width: 100%; min-width: 0; min-height: 0; height: 100%; }
+
+.activity-board__custom-bg {
+  position: absolute; inset: 0; z-index: 0; 
+  background: radial-gradient(circle at 1px 1px, rgba(var(--surface-uml-700-rgb), .16) 1.2px, transparent 0),
+              linear-gradient(180deg, rgba(var(--primary-uml-light-rgb), .08), rgba(255, 255, 255, .96));
+  background-size: 28px 28px, 100% 100%;
+}
+
+.diagram-surface { display: block; position: relative; z-index: 2; overflow: hidden; background: transparent; flex: 1 1 auto; height: 100%; }
+
+:host ::ng-deep ng-diagram.diagram-surface { display: flex; flex: 1 1 auto; min-height: 0; height: 100%; }
+
+.remote-cursor {
+  position: absolute; z-index: 8; display: flex; align-items: center; gap: .25rem; pointer-events: none; transform: translate(2px, 2px);
+}
+
+.remote-cursor__pointer {
+  width: 0; height: 0; border-left: 9px solid var(--remote-cursor-color); border-top: 6px solid transparent; 
+  border-bottom: 6px solid transparent; transform: rotate(-35deg);
+}
+
+.remote-cursor__label {
+  border-radius: 999px; background: var(--remote-cursor-color); padding: .18rem .48rem;
+  font-size: .68rem; font-weight: 700; color: #fff; box-shadow: 0 8px 18px rgba(15, 23, 42, .16);
+}

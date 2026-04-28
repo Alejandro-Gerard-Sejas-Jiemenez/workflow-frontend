@@ -1,0 +1,44 @@
+<section class="rounded-3xl border border-slate-200 bg-white shadow-sm overflow-hidden">
+  <div class="border-b border-slate-100 px-6 py-4">
+    <h2 class="text-lg font-semibold text-slate-900">Bitácora de Acciones (Auditoría)</h2>
+  </div>
+
+  <div class="max-h-[600px] overflow-auto">
+    <div class="divide-y divide-slate-100">
+      @for (log of logs; track log.id) {
+        <div class="flex items-start gap-4 p-6 hover:bg-slate-50 transition">
+          <div class="flex-shrink-0 mt-1">
+            <span 
+              class="inline-flex items-center justify-center h-8 px-3 rounded-lg text-[10px] font-bold uppercase tracking-widest"
+              [ngClass]="getActionClass(log.accion)">
+              {{ log.accion }}
+            </span>
+          </div>
+          
+          <div class="flex-1 min-w-0">
+            <div class="flex items-center justify-between gap-4 mb-1">
+              <p class="text-sm font-semibold text-slate-900 truncate">
+                {{ log.usuarioNombre }}
+                <span class="text-xs font-normal text-slate-500 ml-1">({{ log.usuarioId }})</span>
+              </p>
+              <time class="text-xs text-slate-400 whitespace-nowrap">
+                {{ log.fecha | date:'medium' }}
+              </time>
+            </div>
+            <p class="text-sm text-slate-600 mb-2">
+              <span class="font-medium text-slate-800">Entidad:</span> {{ log.entidad }}
+            </p>
+            <div class="rounded-xl bg-slate-50 p-3 text-xs text-slate-500 border border-slate-100 italic">
+              {{ log.detalles }}
+            </div>
+          </div>
+        </div>
+      } @empty {
+        <div class="p-12 text-center">
+          <i class="pi pi-history text-4xl text-slate-200 mb-3"></i>
+          <p class="text-slate-400">No hay registros en la bitácora aún.</p>
+        </div>
+      }
+    </div>
+  </div>
+</section>

@@ -4,16 +4,18 @@ import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
 import { Button } from 'primeng/button';
 import { ADMIN_DEPARTMENTS, AdminRole, AdminUserCreate } from '../../data/admin-dashboard.data';
 
+import { MultiSelectModule } from 'primeng/multiselect';
+
 @Component({
   selector: 'app-admin-user-creator',
   standalone: true,
-  imports: [CommonModule, ReactiveFormsModule, Button],
+  imports: [CommonModule, ReactiveFormsModule, Button, MultiSelectModule],
   templateUrl: './admin-user-creator.component.html',
   changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class AdminUserCreatorComponent {
-  protected readonly departments = ADMIN_DEPARTMENTS;
   readonly roles = input<AdminRole[]>([]);
+  readonly departments = input<any[]>([]);
   readonly createUser = output<AdminUserCreate>();
   private readonly formBuilder = new FormBuilder();
 
@@ -21,11 +23,25 @@ export class AdminUserCreatorComponent {
     nombre: ['', Validators.required],
     email: ['', [Validators.required, Validators.email]],
     password: ['', [Validators.required, Validators.minLength(6)]],
-    departamento: ['', Validators.required],
+    departamentos: [[] as string[]],
     rolId: ['', Validators.required]
   });
 
+  protected isClient(): boolean {
+    const selectedRole = this.roles().find(r => r.id === this.form.controls.rolId.value);
+    const roleName = selectedRole?.name || '';
+    return roleName === 'Cliente' || roleName === 'ROLE_CLIENTE';
+  }
+
   protected submit(): void {
+    if (this.isClient()) {
+      this.form.controls.departamentos.setValue([]);
+    } else if (this.form.controls.departamentos.value.length === 0) {
+      this.form.controls.departamentos.setErrors({ required: true });
+      this.form.markAllAsTouched();
+      return;
+    }
+
     if (this.form.invalid) {
       this.form.markAllAsTouched();
       return;
@@ -36,7 +52,7 @@ export class AdminUserCreatorComponent {
       nombre: '',
       email: '',
       password: '',
-      departamento: '',
+      departamentos: [] as string[],
       rolId: ''
     });
   }

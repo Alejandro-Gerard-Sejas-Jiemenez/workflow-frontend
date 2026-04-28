@@ -1,0 +1,60 @@
+<section class="min-w-0">
+  <div class="mb-4 flex items-center justify-between gap-3">
+    <h2 class="text-2xl font-semibold tracking-tight text-slate-900">Workflows</h2>
+    <span class="text-sm font-medium text-slate-400">{{ workflows().length }} flujos</span>
+  </div>
+
+  <div class="rounded-3xl border border-slate-200 bg-white shadow-sm">
+    <div class="border-b border-slate-200 p-4">
+      <div class="flex items-center gap-3 rounded-2xl border border-slate-200 bg-white px-4 py-3">
+        <i class="pi pi-search text-slate-400"></i>
+        <input
+          [ngModel]="searchTerm()"
+          (ngModelChange)="updateSearch($event)"
+          class="w-full bg-transparent text-sm text-slate-700 outline-none"
+          placeholder="Buscar workflow..." />
+      </div>
+    </div>
+
+    @if (isLoading()) {
+      <div class="flex min-h-[320px] items-center justify-center p-8">
+        <p class="text-sm text-slate-600">Cargando tus workflows...</p>
+      </div>
+    } @else if (loadError()) {
+      <div class="flex min-h-[320px] items-center justify-center p-8">
+        <div class="text-center">
+          <p class="text-sm text-slate-600">{{ loadError() }}</p>
+          <button (click)="retry.emit()" class="mt-4 text-violet-600 font-semibold">Reintentar</button>
+        </div>
+      </div>
+    } @else {
+      <div class="hidden lg:block overflow-x-auto">
+        <div class="min-w-[760px]">
+          <div class="grid grid-cols-[minmax(0,1.8fr)_110px_180px_130px] border-b border-slate-200 px-6 py-3 text-xs font-semibold uppercase text-slate-400">
+            <span>Nombre</span><span>Rol</span><span>Colaboradores</span><span></span>
+          </div>
+
+          @for (workflow of paginatedWorkflows(); track workflow.id) {
+            <article class="grid grid-cols-[minmax(0,1.8fr)_110px_180px_130px] items-center gap-4 border-b border-slate-100 px-6 py-4">
+              <div class="min-w-0">
+                <h3 class="truncate font-medium text-slate-900">{{ workflow.nombre }}</h3>
+                <p class="truncate text-sm text-slate-500">{{ workflow.descripcion }}</p>
+              </div>
+              <span class="inline-flex rounded-full border px-3 py-1 text-sm font-medium" [class]="roleClasses(workflow)">{{ roleLabel(workflow) }}</span>
+              <div class="flex -space-x-2">
+                @for (c of workflow.collaborators.slice(0, 3); track c.userId) {
+                  <span class="h-8 w-8 flex items-center justify-center rounded-full bg-violet-600 text-xs text-white border-2 border-white" [title]="c.nombre">{{ initials(c.nombre) }}</span>
+                }
+              </div>
+              <div class="flex justify-end gap-2">
+                <button (click)="open.emit(workflow.id)" class="bg-violet-600 text-white px-4 py-1.5 rounded-xl text-sm font-semibold">Abrir</button>
+                <button [disabled]="workflow.ownerUserId !== currentUserId() || deletingId() === workflow.id" (click)="delete.emit(workflow)" class="text-slate-400 hover:text-red-600"><i class="pi pi-trash"></i></button>
+              </div>
+            </article>
+          }
+        </div>
+      </div>
+      <p-paginator [first]="first" [rows]="rows" [totalRecords]="filteredWorkflows().length" (onPageChange)="handlePageChange($event)" />
+    }
+  </div>
+</section>

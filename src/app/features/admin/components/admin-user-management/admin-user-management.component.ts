@@ -16,6 +16,7 @@ export class AdminUserManagementComponent {
   readonly activeUsers = input<AdminUser[]>([]);
   readonly inactiveUsers = input<AdminUser[]>([]);
   readonly roles = input<AdminRole[]>([]);
+  readonly departments = input<any[]>([]);
 
   readonly deactivateUser = output<string>();
   readonly restoreUser = output<string>();

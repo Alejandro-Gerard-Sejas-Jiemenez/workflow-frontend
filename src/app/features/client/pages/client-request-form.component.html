@@ -1,0 +1,82 @@
+<div class="flex min-h-screen flex-col bg-slate-50">
+  <app-page-header
+    icon="pi pi-plus"
+    title="Nueva Solicitud"
+    [subtitle]="workflow()?.nombre || 'Cargando...'"
+    actionLabel="Cancelar"
+    (action)="goBack()" />
+
+  <main class="mx-auto w-full max-w-4xl p-8">
+    <div class="rounded-[2.5rem] bg-white p-10 shadow-sm border border-slate-100">
+      <div class="mb-10 text-center">
+        <h3 class="text-2xl font-bold text-slate-900 mb-2">Formulario de Inicio</h3>
+        <p class="text-slate-500">Por favor, completa los datos requeridos para iniciar tu trámite.</p>
+      </div>
+
+      @if (formulario(); as form) {
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-8 mb-10">
+          @for (campo of form.campos; track campo.nombre) {
+            <div class="flex flex-col gap-2">
+              <label class="text-sm font-semibold text-slate-700">
+                {{ campo.nombre }} 
+                @if(campo.requerido){ <span class="text-rose-500">*</span> }
+              </label>
+              
+              @if (campo.tipo === 'texto' || campo.tipo === 'text') {
+                <input type="text" [ngModel]="formData()[campo.nombre]" (ngModelChange)="updateField(campo.nombre, $event)" class="h-12 w-full rounded-2xl border border-slate-200 bg-slate-50 px-4 text-sm transition focus:border-violet-300 focus:bg-white focus:ring-4 focus:ring-violet-50 outline-none" />
+              } @else if (campo.tipo === 'numero' || campo.tipo === 'number') {
+                <input type="number" [ngModel]="formData()[campo.nombre]" (ngModelChange)="updateField(campo.nombre, $event)" class="h-12 w-full rounded-2xl border border-slate-200 bg-slate-50 px-4 text-sm transition focus:border-violet-300 focus:bg-white focus:ring-4 focus:ring-violet-50 outline-none" />
+              } @else if (campo.tipo === 'fecha' || campo.tipo === 'date') {
+                <input type="date" [ngModel]="formData()[campo.nombre]" (ngModelChange)="updateField(campo.nombre, $event)" class="h-12 w-full rounded-2xl border border-slate-200 bg-slate-50 px-4 text-sm transition focus:border-violet-300 focus:bg-white focus:ring-4 focus:ring-violet-50 outline-none" />
+              } @else if (campo.tipo === 'opciones' || campo.tipo === 'select') {
+                <select [ngModel]="formData()[campo.nombre]" (ngModelChange)="updateField(campo.nombre, $event)" class="h-12 w-full rounded-2xl border border-slate-200 bg-slate-50 px-4 text-sm transition focus:border-violet-300 focus:bg-white focus:ring-4 focus:ring-violet-50 outline-none">
+                  <option value="">Seleccione...</option>
+                  @for (opt of getOptions(campo.opciones); track opt) {
+                    <option [value]="opt">{{ opt }}</option>
+                  }
+                </select>
+              }
+            </div>
+          }
+        </div>
+
+        <div class="mb-12">
+          <h4 class="text-sm font-bold uppercase tracking-widest text-slate-400 mb-4">Documentos Requeridos</h4>
+          <div class="p-8 border-2 border-dashed border-slate-200 rounded-3xl bg-slate-50 text-center hover:border-violet-300 hover:bg-violet-50/30 transition cursor-pointer relative">
+            <input type="file" multiple (change)="onFileSelected($event)" class="absolute inset-0 opacity-0 cursor-pointer" />
+            <i class="pi pi-upload text-4xl text-slate-300 mb-3"></i>
+            <p class="text-slate-600 font-medium">Arrastra tus archivos aquí o haz clic para subir</p>
+            <p class="text-xs text-slate-400 mt-1">Formatos permitidos: PDF, JPG, PNG</p>
+          </div>
+
+          @if (selectedFiles().length > 0) {
+            <div class="mt-4 flex flex-wrap gap-3">
+              @for (file of selectedFiles(); track $index) {
+                <div class="flex items-center gap-2 px-4 py-2 bg-white border border-slate-200 rounded-xl shadow-sm">
+                  <i class="pi pi-file text-violet-500"></i>
+                  <span class="text-sm text-slate-700 truncate max-w-[150px]">{{ file.name }}</span>
+                  <button (click)="removeFile($index)" class="text-slate-400 hover:text-rose-500"><i class="pi pi-times text-xs"></i></button>
+                </div>
+              }
+            </div>
+          }
+        </div>
+
+        <button 
+          (click)="submit()" 
+          [disabled]="isSubmitting"
+          class="w-full h-14 rounded-2xl bg-violet-600 text-white font-bold text-lg shadow-xl shadow-violet-900/20 hover:bg-violet-700 transition active:scale-95 disabled:opacity-50">
+          @if (isSubmitting) {
+            <i class="pi pi-spin pi-spinner mr-2"></i> Procesando...
+          } @else {
+            Enviar Solicitud
+          }
+        </button>
+      } @else {
+        <div class="p-20 text-center">
+          <i class="pi pi-spin pi-spinner text-4xl text-violet-200"></i>
+        </div>
+      }
+    </div>
+  </main>
+</div>

@@ -1,0 +1,35 @@
+<p-toast />
+<div class="flex h-screen flex-col bg-gray-50">
+  <app-page-header
+    icon="pi pi-palette"
+    title="Mis Workflows"
+    subtitle="Crea, abre y administra los flujos que diseñas."
+    [compact]="true"
+    [badgeText]="'Hola, ' + ((user$ | async)?.nombre ?? 'Usuario')"
+    actionLabel="Salir"
+    (action)="logout()" />
+
+  <main class="flex min-h-0 flex-grow flex-col overflow-auto p-4">
+    @if (workflows$ | async; as workflows) {
+      <section class="grid gap-5 lg:grid-cols-[360px_minmax(0,1fr)]">
+        <app-designer-dashboard-sidebar 
+          [isCreating]="isCreating"
+          [createError]="createError"
+          (createWorkflow)="createWorkflow($event)"
+          (openAi)="openAiModal()" />
+
+        <app-designer-workflow-list 
+          [workflows]="workflows"
+          [currentUserId]="(user$ | async)?.id ?? null"
+          [isLoading]="isLoading"
+          [loadError]="loadError"
+          [deletingId]="deletingWorkflowId"
+          (open)="openWorkflow($event)"
+          (delete)="deleteWorkflow($event)"
+          (retry)="refresh$.next()" />
+      </section>
+    }
+  </main>
+
+  <app-designer-ai-modal (generated)="handleAiGenerated($event)" />
+</div>

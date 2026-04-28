@@ -1,0 +1,57 @@
+<section class="border-x border-b border-slate-200 bg-white shadow-sm">
+  <!-- Fila 1: Navegación y Título -->
+  <div class="px-4 py-3 lg:px-6 border-b border-slate-100 h-14 flex items-center">
+    <div class="flex items-center gap-5">
+      <button (click)="goBack.emit()" class="inline-flex items-center gap-2 text-sm font-semibold text-slate-500 hover:text-slate-900 transition-colors">
+        <i class="pi pi-angle-left"></i>
+        <span>Mis Workflows</span>
+      </button>
+      <div class="h-6 w-px bg-slate-200"></div>
+      <div class="flex items-center gap-3">
+        <h2 class="text-xl font-bold text-slate-800">{{ workflow().nombre }}</h2>
+        <span class="px-3 py-1 rounded-lg text-xs font-bold uppercase tracking-wider" 
+              [ngClass]="workflow().estado === 'PUBLICADO' ? 'bg-emerald-100 text-emerald-700' : 'bg-amber-100 text-amber-700'">
+          {{ workflow().estado }}
+        </span>
+      </div>
+    </div>
+  </div>
+
+  <!-- Fila 2: Colaboración y Acciones -->
+  <div class="px-4 py-3 lg:px-6 flex items-center gap-4">
+    <!-- Selector Invitación -->
+    <div class="flex items-center gap-2 flex-1 max-w-2xl">
+      <select class="h-11 flex-1 rounded-xl border border-slate-200 bg-slate-50/50 px-4 text-sm outline-none focus:ring-2 focus:ring-violet-100 transition-all" 
+              [(ngModel)]="selectedInviteUserId">
+        <option value="">Invitar colaborador</option>
+        @for (d of availableDesigners(); track $index) {
+          <option [value]="d.id">{{ d.nombre }}</option>
+        }
+      </select>
+      <button (click)="onInvite()" [disabled]="!selectedInviteUserId" 
+              class="inline-flex h-11 items-center gap-2 rounded-xl border border-slate-200 px-6 text-sm font-bold text-slate-300 transition-all hover:bg-slate-50 hover:text-slate-500 disabled:opacity-50">
+        <i class="pi pi-plus"></i>
+        <span>Invitar</span>
+      </button>
+    </div>
+
+    <!-- Botón Publicar/Despublicar -->
+    <div class="ml-auto">
+      <button (click)="toggleState.emit()" 
+              class="inline-flex h-11 items-center gap-2 rounded-2xl px-8 text-sm font-bold transition-all border shadow-sm"
+              [ngClass]="workflow().estado === 'PUBLICADO' 
+                ? 'bg-orange-50 border-orange-100 text-orange-600 hover:bg-orange-100' 
+                : 'bg-emerald-50 border-emerald-100 text-emerald-600 hover:bg-emerald-100'">
+        <i [class]="workflow().estado === 'PUBLICADO' ? 'pi pi-eye-slash' : 'pi pi-eye'"></i>
+        <span>{{ workflow().estado === 'PUBLICADO' ? 'Despublicar' : 'Publicar' }}</span>
+      </button>
+    </div>
+  </div>
+
+  @if (invitationStatus()) { 
+    <div class="border-t border-slate-100 px-6 py-2 text-xs font-medium text-slate-500 bg-slate-50/30">
+      <i class="pi pi-info-circle mr-2"></i>
+      {{ invitationStatus() }}
+    </div> 
+  }
+</section>

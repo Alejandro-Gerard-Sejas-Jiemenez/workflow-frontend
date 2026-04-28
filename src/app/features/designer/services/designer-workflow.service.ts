@@ -20,6 +20,7 @@ type WorkflowResponseDto = {
     formularioId: string | null;
   }>;
   diagramData: string | null;
+  estado: string;
   ownerUserId: string | null;
   collaborators: WorkflowCollaboratorDto[];
 };
@@ -54,6 +55,11 @@ export class DesignerWorkflowService {
   private readonly http = inject(HttpClient);
   private readonly workflowsUrl = `${apiBaseUrl}/api/workflows`;
   private readonly usersUrl = `${apiBaseUrl}/api/usuarios`;
+  private readonly departamentosUrl = `${apiBaseUrl}/api/departamentos`;
+
+  getDepartments(): Observable<any[]> {
+    return this.http.get<any[]>(this.departamentosUrl);
+  }
 
   getWorkflows(): Observable<DesignerWorkflow[]> {
     return this.http.get<WorkflowResponseDto[]>(this.workflowsUrl).pipe(
@@ -83,6 +89,14 @@ export class DesignerWorkflowService {
     return this.http.put<WorkflowResponseDto>(`${this.workflowsUrl}/${workflowId}/diagrama`, {
       diagramData,
       sourceClientId: sourceClientId ?? null
+    }).pipe(
+      map((workflow) => this.mapWorkflow(workflow))
+    );
+  }
+
+  updateWorkflowState(workflowId: string, estado: string): Observable<DesignerWorkflow> {
+    return this.http.put<WorkflowResponseDto>(`${this.workflowsUrl}/${workflowId}/estado`, {
+      estado
     }).pipe(
       map((workflow) => this.mapWorkflow(workflow))
     );
@@ -124,6 +138,7 @@ export class DesignerWorkflowService {
       id: workflow.id,
       nombre: workflow.nombre,
       descripcion: workflow.descripcion,
+      estado: workflow.estado ?? 'BORRADOR',
       pasos: workflow.pasos ?? [],
       diagramData: workflow.diagramData,
       ownerUserId: workflow.ownerUserId,

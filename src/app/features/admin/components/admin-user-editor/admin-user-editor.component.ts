@@ -4,24 +4,26 @@ import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
 import { Button } from 'primeng/button';
 import { ADMIN_DEPARTMENTS, AdminRole, AdminUser, AdminUserUpdate } from '../../data/admin-dashboard.data';
 
+import { MultiSelectModule } from 'primeng/multiselect';
+
 @Component({
   selector: 'app-admin-user-editor',
   standalone: true,
-  imports: [CommonModule, ReactiveFormsModule, Button],
+  imports: [CommonModule, ReactiveFormsModule, Button, MultiSelectModule],
   templateUrl: './admin-user-editor.component.html',
   changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class AdminUserEditorComponent {
-  protected readonly departments = ADMIN_DEPARTMENTS;
   readonly user = input.required<AdminUser>();
   readonly roles = input<AdminRole[]>([]);
+  readonly departments = input<any[]>([]);
   readonly saveUser = output<AdminUserUpdate>();
   readonly cancelEdit = output<void>();
   private readonly formBuilder = new FormBuilder();
 
   protected readonly form = this.formBuilder.nonNullable.group({
     nombre: ['', Validators.required],
-    departamento: ['', Validators.required],
+    departamentos: [[] as string[], Validators.required],
     rolId: ['', Validators.required]
   });
 
@@ -31,7 +33,7 @@ export class AdminUserEditorComponent {
       const currentRole = this.roles().find((role) => role.name === user.role);
       this.form.setValue({
         nombre: user.name,
-        departamento: user.department,
+        departamentos: user.departments || [],
         rolId: currentRole?.id ?? ''
       });
     });

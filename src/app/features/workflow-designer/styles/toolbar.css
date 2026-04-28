@@ -1,0 +1,42 @@
+.editor-topbar {
+  position: relative; z-index: 6; display: flex; align-items: center; justify-content: space-between; flex: 0 0 auto; gap: .75rem; 
+  padding: .55rem .85rem; border-bottom: 1px solid color-mix(in srgb, var(--text-uml-soft) 26%, white); background: #fff;
+}
+
+.editor-topbar__brand, .editor-topbar__actions, .editor-chip, .editor-icon-button, .editor-save-button { display: flex; align-items: center; }
+
+.editor-topbar__brand { flex: 1 1 auto; min-width: 0; gap: .65rem; }
+
+.editor-topbar__badge {
+  display: grid; place-items: center; width: 34px; height: 34px; border-radius: 10px;
+  background: var(--primary-uml); color: var(--text-uml-strong); font-size: .78rem; font-weight: 800;
+}
+
+.editor-topbar__title { font-size: .96rem; font-weight: 700; color: var(--surface-uml-800); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+
+.editor-topbar__meta { display: flex; flex: 1; justify-content: center; gap: .55rem; }
+
+.editor-chip {
+  height: 28px; padding: 0 .68rem; border: 1px solid color-mix(in srgb, var(--text-uml-soft) 26%, white);
+  border-radius: 999px; background: #f8fafc; font-size: .72rem; font-weight: 600; color: var(--surface-uml-600);
+}
+
+.editor-chip--name { background: var(--p-primary-50); border-color: var(--p-primary-200); color: var(--primary-uml-dark); }
+.editor-chip--dirty { background: var(--p-primary-100); border-color: var(--p-primary-300); color: var(--primary-uml-dark); }
+
+.editor-topbar__actions { flex: 0 0 auto; gap: .35rem; margin-left: auto; }
+
+.editor-icon-button {
+  justify-content: center; width: 32px; height: 32px; border: 1px solid color-mix(in srgb, var(--text-uml-soft) 26%, white);
+  border-radius: 8px; background: #fff; color: var(--surface-uml-600); cursor: pointer;
+}
+
+.editor-zoom {
+  display: inline-flex; align-items: center; justify-content: center; min-width: 80px; height: 32px;
+  border: 1px solid color-mix(in srgb, var(--text-uml-soft) 26%, white); border-radius: 8px; font-size: .74rem; font-weight: 600;
+}
+
+.editor-save-button {
+  gap: .45rem; height: 34px; padding: 0 .82rem; border-radius: 9px; background: var(--primary-uml); 
+  font-size: .78rem; font-weight: 700; color: var(--text-uml-strong); cursor: pointer; border: none;
+}

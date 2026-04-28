@@ -7,3 +7,33 @@
   background: var(--primary-uml-dark) !important;
   border-color: var(--primary-uml-dark) !important;
 }
+
+.p-button-violet {
+  background: #7c3aed !important;
+  border-color: #7c3aed !important;
+  color: white !important;
+}
+
+.p-button-violet:hover {
+  background: #6d28d9 !important;
+  border-color: #6d28d9 !important;
+}
+
+.p-button-violet.p-button-outlined {
+  background: transparent !important;
+  color: #7c3aed !important;
+  border-color: #7c3aed !important;
+}
+
+.p-button-violet.p-button-outlined:hover {
+  background: #f5f3ff !important;
+}
+
+.designer-dialog .p-dialog-header {
+  border-bottom: 1px solid #f1f5f9;
+  padding: 1.5rem;
+}
+
+.designer-dialog .p-dialog-content {
+  padding: 1.5rem;
+}

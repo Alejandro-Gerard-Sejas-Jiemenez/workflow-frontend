@@ -3,12 +3,35 @@
     icon="pi pi-briefcase"
     title="Portal del Funcionario"
     subtitle="Revisa y ejecuta tus tareas pendientes."
-    [badgeText]="'Bandeja de entrada: ' + ((user$ | async)?.nombre ?? 'Usuario')"
+    [badgeText]="((user$ | async)?.nombre ?? 'Usuario') + ' | ' + ((user$ | async)?.departamento ?? 'Sin Departamento')"
     actionLabel="Salir"
     (action)="logout()" />
 
   <main class="mx-auto w-full max-w-7xl p-8">
-    <h2 class="mb-6 text-2xl font-bold text-gray-800">Mis Tareas Pendientes</h2>
-    <app-employee-task-list [tasks]="tasks" />
+    <div class="flex items-center justify-between mb-6">
+      <h2 class="text-2xl font-bold text-gray-800">Mis Tareas Pendientes</h2>
+      <div class="flex items-center gap-3">
+        <button 
+          (click)="optimizePriorities()"
+          [disabled]="isOptimizing"
+          class="flex items-center gap-2 px-4 py-2 bg-violet-600 text-white rounded-xl text-sm font-bold shadow-lg shadow-violet-200 hover:bg-violet-700 transition active:scale-95 disabled:opacity-50">
+          <i class="pi pi-sparkles" [class.pi-spin]="isOptimizing"></i>
+          {{ isOptimizing ? 'Optimizando...' : 'Priorizar con IA' }}
+        </button>
+        <span class="px-3 py-2 bg-blue-100 text-blue-700 rounded-xl text-sm font-bold">
+          {{ ((tasks$ | async)?.length ?? 0) }} Tareas
+        </span>
+      </div>
+    </div>
+
+    @if ((tasks$ | async)?.length) {
+      <app-employee-task-list [tasks]="(tasks$ | async) ?? []" />
+    } @else {
+      <div class="flex flex-col items-center justify-center p-12 bg-white rounded-xl border-2 border-dashed border-gray-200">
+        <i class="pi pi-inbox text-5xl text-gray-300 mb-4"></i>
+        <p class="text-xl font-medium text-gray-600">No tienes tareas pendientes</p>
+        <p class="text-gray-400">Cuando se te asigne una nueva tarea para tu departamento, aparecerá aquí.</p>
+      </div>
+    }
   </main>
 </div>

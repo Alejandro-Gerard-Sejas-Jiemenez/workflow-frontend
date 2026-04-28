@@ -6,14 +6,18 @@
     }
   </div>
   <div>
-    <select class="w-full rounded-lg border border-gray-200 px-3 py-2 text-sm" formControlName="departamento">
-      <option value="">Selecciona un departamento</option>
-      @for (department of departments; track department) {
-        <option [value]="department">{{ department }}</option>
-      }
-    </select>
-    @if (form.controls.departamento.touched && form.controls.departamento.invalid) {
-      <p class="mt-1 text-xs text-red-600">Selecciona un departamento.</p>
+    <p-multiSelect 
+      [options]="departments()" 
+      optionLabel="nombre" 
+      optionValue="nombre"
+      formControlName="departamentos"
+      placeholder="Departamentos"
+      styleClass="w-full"
+      appendTo="body"
+      display="chip">
+    </p-multiSelect>
+    @if (form.controls.departamentos.touched && form.controls.departamentos.invalid) {
+      <p class="mt-1 text-xs text-red-600">Selecciona al menos un departamento.</p>
     }
   </div>
   <div class="md:col-span-2">

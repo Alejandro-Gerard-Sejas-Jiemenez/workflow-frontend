@@ -57,7 +57,9 @@
                   <p class="text-sm text-slate-500">{{ user.email }}</p>
                   <div class="mt-2 flex flex-wrap gap-2 text-xs">
                     <span class="rounded-full bg-violet-100 px-2.5 py-1 font-medium text-violet-700">{{ user.role }}</span>
-                    <span class="rounded-full bg-slate-100 px-2.5 py-1 font-medium text-slate-600">{{ user.department }}</span>
+                    @for (dept of user.departments; track dept) {
+                      <span class="rounded-full bg-slate-100 px-2.5 py-1 font-medium text-slate-600">{{ dept }}</span>
+                    }
                     @if (inactiveUsers().some(inactive => inactive.id === user.id)) {
                       <span class="rounded-full bg-amber-100 px-2.5 py-1 font-medium text-amber-700">Inactivo</span>
                     }
@@ -95,6 +97,7 @@
             <app-admin-user-editor
               [user]="user"
               [roles]="roles()"
+              [departments]="departments()"
               (saveUser)="saveUser($event)"
               (cancelEdit)="stopEditing()" />
           }
