@@ -20,7 +20,7 @@ type RuntimeWindow = Window & {
 };
 
 const apiBaseUrl =
-  (window as RuntimeWindow).__env?.API_BASE_URL ?? 'http://localhost:8081/api';
+  (window as RuntimeWindow).__env?.API_BASE_URL ?? '';
 
 type UsuarioResponseDto = {
   id: string;

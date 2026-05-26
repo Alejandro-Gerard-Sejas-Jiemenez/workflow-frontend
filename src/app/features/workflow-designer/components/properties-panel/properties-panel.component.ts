@@ -6,6 +6,7 @@ import { WorkflowDiagramNodeData } from '../node/node.component';
 import { FormBuilderComponent } from './form-builder/form-builder.component';
 import { ConditionBuilderComponent } from './condition-builder/condition-builder.component';
 import { WorkflowDesignerActionService } from '../../core/services/workflow-designer-action.service';
+import { WorkflowDesignerStateService } from '../../core/services/workflow-designer-state.service';
 
 @Component({
   selector: 'app-workflow-designer-properties-panel',
@@ -13,33 +14,35 @@ import { WorkflowDesignerActionService } from '../../core/services/workflow-desi
   imports: [CommonModule, FormsModule, FormBuilderComponent, ConditionBuilderComponent],
   template: `
     <aside class="form-builder-panel">
-      <div class="form-builder-panel__header">
-        <div>
-          <h4 class="text-slate-800 font-bold">{{ getTitle() }}</h4>
-          <p class="text-xs text-slate-400">{{ getSubtitle() }}</p>
-        </div>
-        <div class="flex items-center gap-2">
-          <input type="checkbox" id="node-active" [ngModel]="node()?.data?.formEnabled !== false" (ngModelChange)="updateActive($event)" class="accent-violet-600">
-          <label for="node-active" class="text-[10px] font-black uppercase text-slate-400">Activo</label>
-        </div>
-      </div>
-
-      <div class="form-builder-panel__body">
-        @if (edge()) {
-          <div class="property-group">
-            <label>Etiqueta de la conexión</label>
-            <input type="text" [ngModel]="edge()?.data?.label" (ngModelChange)="updateEdgeLabel($event)" placeholder="Ej: Sí / No / Condición">
+      <fieldset [disabled]="stateService.isPublished()" class="contents">
+        <div class="form-builder-panel__header">
+          <div>
+            <h4 class="text-slate-800 font-bold">{{ getTitle() }}</h4>
+            <p class="text-xs text-slate-400">{{ getSubtitle() }}</p>
           </div>
-        } @else if (node()) {
-          @if (isCondition()) {
-            <app-workflow-designer-condition-builder [node]="node()!" />
+          <div class="flex items-center gap-2">
+            <input type="checkbox" id="node-active" [ngModel]="node()?.data?.formEnabled !== false" (ngModelChange)="updateActive($event)" class="accent-violet-600">
+            <label for="node-active" class="text-[10px] font-black uppercase text-slate-400">Activo</label>
+          </div>
+        </div>
+
+        <div class="form-builder-panel__body">
+          @if (edge()) {
+            <div class="property-group">
+              <label>Etiqueta de la conexión</label>
+              <input type="text" [ngModel]="edge()?.data?.label" (ngModelChange)="updateEdgeLabel($event)" placeholder="Ej: Sí / No / Condición">
+            </div>
+          } @else if (node()) {
+            @if (isCondition()) {
+              <app-workflow-designer-condition-builder [node]="node()!" />
+            } @else {
+              <app-workflow-designer-form-builder [node]="node()!" />
+            }
           } @else {
-            <app-workflow-designer-form-builder [node]="node()!" />
+            <div class="empty-state">Selecciona un elemento para configurar</div>
           }
-        } @else {
-          <div class="empty-state">Selecciona un elemento para configurar</div>
-        }
-      </div>
+        </div>
+      </fieldset>
     </aside>
   `,
   styles: [`
@@ -54,6 +57,7 @@ export class PropertiesPanelComponent {
   edge = input<Edge<any> | null>(null);
   
   private actionService = inject(WorkflowDesignerActionService);
+  public stateService = inject(WorkflowDesignerStateService);
 
   getTitle(): string {
     if (this.edge()) return 'Propiedades de línea';

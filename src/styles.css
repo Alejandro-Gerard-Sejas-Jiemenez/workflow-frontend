@@ -6,3 +6,19 @@
 @import './styles/primeng.css';
 @import 'ng-diagram/styles.css';
 @import "primeicons/primeicons.css";
+
+/* Forzar que los Swimlanes (carriles) se pinten detrás */
+.ng-diagram-node-wrapper:has(.workflow-node--lane) {
+  z-index: -100 !important;
+}
+
+/* Forzar que los Nodos normales se pinten al frente */
+.ng-diagram-node-wrapper:not(:has(.workflow-node--lane)) {
+  z-index: 1000 !important;
+}
+
+/* Forzar que las etiquetas de conexiones se pinten al frente absoluto */
+ng-diagram-base-edge-label, 
+.ng-diagram-edges-layer {
+  z-index: 9999 !important;
+}

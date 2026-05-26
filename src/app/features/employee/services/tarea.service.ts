@@ -22,7 +22,7 @@ type RuntimeWindow = Window & {
   };
 };
 
-const apiBaseUrl = (window as RuntimeWindow).__env?.API_BASE_URL ?? 'http://localhost:8081';
+const apiBaseUrl = (window as RuntimeWindow).__env?.API_BASE_URL ?? '';
 
 @Injectable({
   providedIn: 'root'

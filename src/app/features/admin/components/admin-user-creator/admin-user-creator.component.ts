@@ -1,4 +1,4 @@
-import { ChangeDetectionStrategy, Component, input, output } from '@angular/core';
+import { ChangeDetectionStrategy, Component, input, output, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
 import { Button } from 'primeng/button';
@@ -13,12 +13,16 @@ import { MultiSelectModule } from 'primeng/multiselect';
   templateUrl: './admin-user-creator.component.html',
   changeDetection: ChangeDetectionStrategy.OnPush
 })
-export class AdminUserCreatorComponent {
+export class AdminUserCreatorComponent implements OnInit {
   readonly roles = input<AdminRole[]>([]);
   readonly departments = input<any[]>([]);
   readonly createUser = output<AdminUserCreate>();
   private readonly formBuilder = new FormBuilder();
-
+  ngOnInit(): void {
+    console.log('AdminUserCreatorComponent initialized');
+    console.log('Roles input:', this.roles());
+    console.log('Departments input:', this.departments());
+  }
   protected readonly form = this.formBuilder.nonNullable.group({
     nombre: ['', Validators.required],
     email: ['', [Validators.required, Validators.email]],
@@ -34,6 +38,7 @@ export class AdminUserCreatorComponent {
   }
 
   protected submit(): void {
+    console.log('Submitting form with value:', this.form.getRawValue());
     if (this.isClient()) {
       this.form.controls.departamentos.setValue([]);
     } else if (this.form.controls.departamentos.value.length === 0) {

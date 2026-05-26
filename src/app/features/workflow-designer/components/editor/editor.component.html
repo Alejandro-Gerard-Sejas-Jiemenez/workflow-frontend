@@ -2,20 +2,36 @@
 <div class="diagram-editor-layout h-full">
   <div class="editor-shell h-full flex">
     <!-- Panel Izquierdo Modular -->
-    <app-workflow-designer-sidebar [paletteItems]="paletteItems" [supportedPatterns]="supportedPatterns"
-      [isGeneratingAi]="isGeneratingAi()" [aiProposal]="aiProposal()" (insertPattern)="insertFlowPattern($event)"
-      (proposeWithAi)="proposeWithAi($event)" (applyAiProposal)="applyAiProposal()" />
+    <app-workflow-designer-sidebar 
+      [paletteItems]="paletteItems" 
+      [supportedPatterns]="supportedPatterns"
+      [isGeneratingAi]="isGeneratingAi()" 
+      [aiProposal]="aiProposal()" 
+      (insertPattern)="insertFlowPattern($event)"
+      (proposeWithAi)="proposeWithAi($event)" 
+      (applyAiProposal)="applyAiProposal()"
+      [class.pointer-events-none]="stateService.isPublished()"
+      [class.opacity-60]="stateService.isPublished()" />
 
     <section class="editor-main flex-1 relative bg-slate-50">
       <!-- Floating Tools Toolbar -->
       <div class="absolute top-4 right-4 z-10 flex gap-2 items-center">
+        @if (stateService.isPublished()) {
+          <div class="bg-amber-500/90 text-white px-3 py-2 rounded-xl shadow-lg font-bold text-xs flex items-center gap-2 border border-amber-400/40 backdrop-blur-sm mr-2">
+            <i class="pi pi-lock animate-pulse text-sm"></i>
+            <span>Modo Lectura</span>
+          </div>
+        }
+
         <!-- Botón Guardar -->
-        <button (click)="manualSave()" 
-                class="h-10 px-4 bg-indigo-600 hover:bg-indigo-700 text-white font-bold text-xs rounded-xl shadow-lg border border-indigo-500 flex items-center gap-2 transition-all active:scale-95" 
-                title="Guardar cambios en el servidor">
-          <i class="pi pi-save"></i>
-          <span>Guardar</span>
-        </button>
+        @if (!stateService.isPublished()) {
+          <button (click)="manualSave()" 
+                  class="h-10 px-4 bg-indigo-600 hover:bg-indigo-700 text-white font-bold text-xs rounded-xl shadow-lg border border-indigo-500 flex items-center gap-2 transition-all active:scale-95" 
+                  title="Guardar cambios en el servidor">
+            <i class="pi pi-save"></i>
+            <span>Guardar</span>
+          </button>
+        }
         
         <div class="w-px bg-slate-300 mx-1 h-6"></div>
 
@@ -47,7 +63,7 @@
       </div>
 
       <!-- Contextual Connect Button -->
-      @if (selection.nodes.length === 2) {
+      @if (selection.nodes.length === 2 && !stateService.isPublished()) {
       <div class="absolute bottom-8 left-1/2 -translate-x-1/2 z-10 animate-fadeinup">
         <button (click)="actionService.connectSelectedNodes()"
           class="bg-indigo-600 hover:bg-indigo-700 text-white px-6 py-3 rounded-full shadow-xl font-bold flex items-center gap-3 transition-transform transform hover:scale-105">
@@ -59,12 +75,27 @@
 
       <div class="activity-board h-full w-full">
         <div class="activity-board__custom-bg"></div>
-        <div class="activity-board__canvas h-full w-full" (window:keydown)="onGlobalKeyDown($event)">
+        <div class="activity-board__canvas h-full w-full relative" (window:keydown)="onGlobalKeyDown($event)" (mousemove)="onCanvasMouseMove($event)">
           <ng-diagram #diagramCanvas [model]="model()" [config]="diagramConfig" class="diagram-surface h-full w-full"
             [nodeTemplateMap]="nodeTemplateMap" [edgeTemplateMap]="edgeTemplateMap" (diagramInit)="onDiagramInit()"
             (select)="onSelectionChanged($event)">
           </ng-diagram>
 
+          <!-- Cursores Remotos Colaborativos -->
+          @for (c of stateService.remoteCursors(); track c.clientId) {
+            @if (c.cursor) {
+              <div class="absolute pointer-events-none z-50 flex items-center gap-2 transition-all duration-75"
+                   [style.left.px]="c.cursor.x" 
+                   [style.top.px]="c.cursor.y">
+                <svg width="14" height="14" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg">
+                  <path d="M0 0L16 5L9 9L5 16L0 0Z" [attr.fill]="c.color || '#7c3aed'"/>
+                </svg>
+                <span class="bg-slate-900/90 text-white text-[10px] px-1.5 py-0.5 rounded shadow backdrop-blur-sm font-medium">
+                  {{ c.name }}
+                </span>
+              </div>
+            }
+          }
         </div>
       </div>
 

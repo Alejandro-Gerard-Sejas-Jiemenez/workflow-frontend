@@ -9,6 +9,7 @@ export type RemoteCursor = WorkflowPresenceUser & {
 export class WorkflowDesignerStateService {
   // Estado básico del editor
   public readonly isDirty = signal(false);
+  public readonly isPublished = signal(false);
   public readonly isSaving = signal(false);
   public readonly lastSavedAt = signal<Date | null>(null);
   public readonly zoomLevel = signal(100);

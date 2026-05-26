@@ -1,14 +1,14 @@
 import { ChangeDetectionStrategy, Component, inject, input } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { Card } from 'primeng/card';
-import { Button } from 'primeng/button';
+import { CardModule } from 'primeng/card';
+import { ButtonModule } from 'primeng/button';
 import { EmployeeTask } from '../../data/employee-dashboard.data';
 import { Router } from '@angular/router';
 
 @Component({
   selector: 'app-employee-task-list',
   standalone: true,
-  imports: [CommonModule, Card, Button],
+  imports: [CommonModule, CardModule, ButtonModule],
   templateUrl: './employee-task-list.component.html',
   changeDetection: ChangeDetectionStrategy.OnPush
 })

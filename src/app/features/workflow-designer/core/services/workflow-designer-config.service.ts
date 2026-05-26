@@ -17,6 +17,10 @@ export class WorkflowDesignerConfigService {
       edgeRouting: {
         defaultRouting: 'bezier'
       },
+      zIndex: {
+        enabled: true,
+        edgesAboveConnectedNodes: true
+      },
       linking: {
         finalEdgeDataBuilder: (edge: any, source: any) => {
           let labelText = '';
@@ -84,6 +88,14 @@ export class WorkflowDesignerConfigService {
       id: node.id,
       data: { ...node.data, ...patch }
     }]);
+  }
+
+  public updateNodeBounds(node: any, width: number, height: number, x?: number, y?: number): void {
+    const patch: any = { id: node.id, size: { width, height } };
+    if (x !== undefined && y !== undefined) {
+      patch.position = { x, y };
+    }
+    this.modelService.updateNodes([patch]);
   }
 
   public createDefaultFormSchema(node: Node<WorkflowDiagramNodeData>): DynamicFormSchema {

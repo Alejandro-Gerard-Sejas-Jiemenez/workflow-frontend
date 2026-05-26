@@ -12,12 +12,12 @@ import { NgDiagramBaseEdgeComponent, Edge, NgDiagramEdgeTemplate, NgDiagramBaseE
       [strokeWidth]="3"
       targetArrowhead="ng-diagram-arrow"
     >
-      @for (label of $any(edge()).labels; track label.id) {
+      @if (edge().data?.label) {
         <ng-diagram-base-edge-label 
-          [id]="label.id" 
-          [positionOnEdge]="label.positionOnEdge">
+          [id]="edge().id + '-label'" 
+          [positionOnEdge]="edge().data?.positionOnEdge ?? 0.5">
           <div class="workflow-edge-label font-bold text-[10px] bg-white px-1.5 py-0.5 rounded shadow-sm border border-slate-300 text-slate-600">
-            {{ edge().data?.label }}
+            {{ edge().data.label }}
           </div>
         </ng-diagram-base-edge-label>
       }

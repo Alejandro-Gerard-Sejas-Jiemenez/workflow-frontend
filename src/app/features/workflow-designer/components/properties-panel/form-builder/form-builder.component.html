@@ -1,4 +1,4 @@
-<div class="form-builder-section space-y-5">
+<fieldset [disabled]="stateService.isPublished()" class="form-builder-section space-y-5 border-none p-0 m-0">
   <!-- Grupo 1: Datos del Formulario -->
   <div class="bg-slate-50/60 rounded-2xl p-4 border border-slate-100/80 backdrop-blur-sm space-y-4">
     <label class="flex flex-col gap-1.5">
@@ -217,4 +217,4 @@
       </button>
     </div>
   </div>
-</div>
+</fieldset>

@@ -131,15 +131,21 @@ export class WorkflowDesignerActionService {
     }
 
     try {
+      const sortedNodes = [...(data.nodes || [])].sort((a: any, b: any) => {
+        if (a.type === 'lane' && b.type !== 'lane') return -1;
+        if (a.type !== 'lane' && b.type === 'lane') return 1;
+        return 0;
+      });
+
       const ms = this.modelService as any;
       if (typeof ms.initializeModel === 'function') {
         ms.initializeModel(initializeModel({
-          nodes: data.nodes || [],
+          nodes: sortedNodes,
           edges: data.edges || []
         }));
       } else {
         // Fallback seguro
-        this.modelService.addNodes(data.nodes || []);
+        this.modelService.addNodes(sortedNodes);
         this.modelService.addEdges(data.edges || []);
       }
 

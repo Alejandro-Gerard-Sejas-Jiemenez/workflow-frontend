@@ -4,13 +4,14 @@ import { FormsModule } from '@angular/forms';
 import { SimpleNode } from 'ng-diagram';
 import { WorkflowDiagramNodeData } from '../../node/node.component';
 import { WorkflowDesignerConfigService } from '../../../core/services/workflow-designer-config.service';
+import { WorkflowDesignerStateService } from '../../../core/services/workflow-designer-state.service';
 
 @Component({
   selector: 'app-workflow-designer-condition-builder',
   standalone: true,
   imports: [CommonModule, FormsModule],
   template: `
-    <div class="condition-builder-section space-y-4">
+    <fieldset [disabled]="stateService.isPublished()" class="condition-builder-section space-y-4 border-none p-0 m-0">
       <div class="flex items-center justify-between">
         <span class="text-[11px] font-black text-slate-700 uppercase tracking-widest flex items-center gap-1.5">
           <i class="pi pi-sliders-h text-[11px] text-slate-400"></i> Reglas de Decisión
@@ -86,13 +87,14 @@ import { WorkflowDesignerConfigService } from '../../../core/services/workflow-d
           </div>
         }
       </div>
-    </div>
+    </fieldset>
   `,
   styleUrl: '../../editor/editor.component.css'
 })
 export class ConditionBuilderComponent {
   node = input.required<SimpleNode<WorkflowDiagramNodeData>>();
   private configService = inject(WorkflowDesignerConfigService);
+  public stateService = inject(WorkflowDesignerStateService);
 
   get config() { 
     const c = this.node().data.conditionConfig as any;

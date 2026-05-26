@@ -4,6 +4,7 @@ import { FormsModule } from '@angular/forms';
 import { SimpleNode } from 'ng-diagram';
 import { WorkflowDiagramNodeData } from '../../node/node.component';
 import { WorkflowDesignerConfigService } from '../../../core/services/workflow-designer-config.service';
+import { WorkflowDesignerStateService } from '../../../core/services/workflow-designer-state.service';
 
 @Component({
   selector: 'app-workflow-designer-form-builder',
@@ -15,6 +16,7 @@ import { WorkflowDesignerConfigService } from '../../../core/services/workflow-d
 export class FormBuilderComponent {
   node = input.required<SimpleNode<WorkflowDiagramNodeData>>();
   public configService = inject(WorkflowDesignerConfigService);
+  public stateService = inject(WorkflowDesignerStateService);
 
   get schema() { return this.node().data.formSchema; }
   

@@ -11,7 +11,7 @@ type RuntimeWindow = Window & {
 };
 
 const authApiUrl =
-  (window as RuntimeWindow).__env?.AUTH_API_URL ?? 'http://localhost:8081/api/auth';
+  (window as RuntimeWindow).__env?.AUTH_API_URL ?? '';
 const tokenStorageKey = 'jwt_token';
 
 export interface UserInfo {
@@ -40,7 +40,9 @@ export class AuthService {
   login(credentials: { email: string; password: string }): Observable<any> {
     return this.http.post<any>(`${this.apiUrl}/login`, credentials).pipe(
       tap(response => {
+        console.log('🔐 Login response:', response);
         if (response.token) {
+          console.log('🔑 Token received:', response.token);
           sessionStorage.setItem(tokenStorageKey, response.token);
           this.decodeAndSetUser(response.token);
         }

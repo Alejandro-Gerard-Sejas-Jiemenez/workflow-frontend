@@ -1,6 +1,8 @@
-import { Component, inject, input, output, effect, computed } from '@angular/core';
+import { Component, inject, input, output, effect, computed, DestroyRef } from '@angular/core';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { CommonModule } from '@angular/common';
+import { Subject } from 'rxjs';
+import { debounceTime, distinctUntilChanged, throttleTime } from 'rxjs/operators';
 import { NgDiagramComponent, NgDiagramModelService, NgDiagramViewportService, NgDiagramSelectionService, NgDiagramService, provideNgDiagram, NgDiagramNodeTemplateMap, NgDiagramEdgeTemplateMap, NgDiagramConfig, initializeModel } from 'ng-diagram';
 
 import { WorkflowDesignerSidebarComponent } from '../sidebar/sidebar.component';
@@ -36,6 +38,7 @@ export class WorkflowEditorComponent {
   private collabService = inject(WorkflowDesignerCollaborationService);
   private genericCollabService = inject(WorkflowCollaborationService);
   private diagramService = inject(NgDiagramService);
+  private destroyRef = inject(DestroyRef);
 
   protected readonly diagramConfig: NgDiagramConfig = this.configService.getDiagramConfig();
 
@@ -73,9 +76,58 @@ export class WorkflowEditorComponent {
   paletteItems = WORKFLOW_PALETTE_ITEMS;
   supportedPatterns = SUPPORTED_PATTERNS;
 
+  private readonly cursorUpdates$ = new Subject<{ x: number, y: number }>();
+
   constructor() {
     this.genericCollabService.messages$.pipe(takeUntilDestroyed())
       .subscribe(e => this.collabService.handleEvent(e));
+
+    this.cursorUpdates$.pipe(
+      throttleTime(100),
+      takeUntilDestroyed()
+    ).subscribe(coords => {
+      const currentWf = this.workflow();
+      if (currentWf && currentWf.id) {
+        this.genericCollabService.send({
+          type: 'cursor-moved',
+          workflowId: currentWf.id,
+          cursor: coords
+        });
+      }
+    });
+
+    const keyListener = (event: KeyboardEvent) => {
+      if (this.stateService.isPublished()) {
+        const key = event.key.toLowerCase();
+        if (key === 'delete' || key === 'backspace' || key === 'c') {
+          event.preventDefault();
+          event.stopImmediatePropagation();
+          return;
+        }
+        if (event.ctrlKey || event.metaKey) {
+          if (['z', 'y', 'x', 'v'].includes(key)) {
+            event.preventDefault();
+            event.stopImmediatePropagation();
+            return;
+          }
+        }
+      }
+    };
+    window.addEventListener('keydown', keyListener, true);
+    this.destroyRef.onDestroy(() => {
+      window.removeEventListener('keydown', keyListener, true);
+    });
+
+    effect(() => {
+      const published = this.stateService.isPublished();
+      try {
+        const config = (this.diagramService as any).config;
+        if (config) {
+          if (!config.resize) config.resize = {};
+          config.resize.enabled = !published;
+        }
+      } catch (e) { }
+    });
 
     effect(() => {
       const wf = this.workflow();
@@ -84,6 +136,7 @@ export class WorkflowEditorComponent {
         console.log('[Editor] Cargando datos del workflow reactivamente...');
         try {
           this.actionService.loadWorkflow(wf);
+          this.stateService.isPublished.set(wf?.estado === 'PUBLICADO');
         } catch(e) {
           console.error('[Editor] Error cargando workflow:', e);
         }
@@ -111,9 +164,57 @@ export class WorkflowEditorComponent {
     if (wf) {
       requestAnimationFrame(() => {
         this.actionService.loadWorkflow(wf);
+        this.stateService.isPublished.set(wf?.estado === 'PUBLICADO');
         this.stateService.updateStats(this.modelService.nodes().length, this.modelService.edges().length);
       });
     }
+
+    // Sincronización colaborativa en tiempo real (Optimizada con Debounce para AWS Free Tier)
+    const syncDiagramDraft$ = new Subject<string>();
+
+    syncDiagramDraft$.pipe(
+      debounceTime(500),
+      distinctUntilChanged(),
+      takeUntilDestroyed(this.destroyRef)
+    ).subscribe((json) => {
+      try {
+        const currentWf = this.workflow();
+        if (currentWf && currentWf.id) {
+          this.genericCollabService.send({
+            type: 'diagram-updated',
+            workflowId: currentWf.id,
+            diagramData: json
+          });
+        }
+      } catch (err) {}
+    });
+
+    const eventsToSync = [
+      'selectionMoved', 'edgeDrawEnded', 'nodeResized', 
+      'paletteItemDropped', 'groupMembershipChanged', 'selectionRemoved'
+    ];
+
+    eventsToSync.forEach((ev: any) => {
+      this.diagramService.addEventListener(ev, () => {
+        if (this.stateService.isPublished()) return;
+        try {
+          const json = this.actionService.getModelJSON();
+          if (json && json.length > 2) {
+            syncDiagramDraft$.next(json);
+          }
+        } catch (err) {}
+      });
+    });
+  }
+
+  onCanvasMouseMove(event: MouseEvent) {
+    if (this.stateService.isPublished()) return;
+    try {
+      const rect = (event.currentTarget as HTMLElement).getBoundingClientRect();
+      const x = event.clientX - rect.left;
+      const y = event.clientY - rect.top;
+      this.cursorUpdates$.next({ x, y });
+    } catch (err) {}
   }
 
   onPaletteDrop(e: any) {
@@ -135,8 +236,16 @@ export class WorkflowEditorComponent {
   applyAiProposal() { }
 
   onGlobalKeyDown(event: KeyboardEvent) {
+    if (this.stateService.isPublished()) {
+      if (event.key === 'Delete' || event.key === 'Backspace') {
+        event.preventDefault();
+        event.stopPropagation();
+        return;
+      }
+    }
+
     if ((event.key === 'c' || event.key === 'C') && !event.ctrlKey && !event.altKey && !event.metaKey) {
-      if (this.selection.nodes.length === 2) {
+      if (this.selection.nodes.length === 2 && !this.stateService.isPublished()) {
         this.actionService.connectSelectedNodes();
         event.preventDefault();
       }

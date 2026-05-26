@@ -37,7 +37,7 @@ export type WorkflowCollaborationEvent = {
 };
 
 const apiBaseUrl =
-  (window as RuntimeWindow).__env?.API_BASE_URL ?? 'http://localhost:8082';
+  ((window as RuntimeWindow).__env as any)?.COLLABORATION_API_URL;
 
 @Injectable({
   providedIn: 'root'
@@ -46,7 +46,8 @@ export class WorkflowCollaborationService {
   private readonly messageSubject = new Subject<WorkflowCollaborationEvent>();
   private socket: WebSocket | null = null;
   private subscribedWorkflowId: string | null = null;
-  private readonly socketUrl = apiBaseUrl.replace(/^http/i, 'ws') + '/ws/workflows';
+  private readonly socketUrl =
+    ((window as RuntimeWindow).__env as any)?.COLLABORATION_WS_URL ?? 'ws://localhost:8082/ws/workflows';
   private readonly instanceClientId = `designer-${crypto.randomUUID()}`;
 
   get clientId(): string {
