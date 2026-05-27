@@ -34,7 +34,7 @@ export class WorkflowDesignerConfigService {
           return {
             ...edge,
             type: 'flow',
-            data: { 
+            data: {
               label: labelText,
               labels: labels.length > 0 ? labels : undefined
             }
@@ -108,20 +108,21 @@ export class WorkflowDesignerConfigService {
 
   public updateFormField(node: Node<WorkflowDiagramNodeData>, id: string, patch: any): void {
     const schema = node.data.formSchema;
-    if (!schema) return;
+    if (!schema || !schema.fields) return;
     const fields = schema.fields.map((f: DynamicFormField) => f.id === id ? { ...f, ...patch } : f);
     this.updateNodeData(node, { formSchema: { ...schema, fields } });
   }
 
   public addFormField(node: Node<WorkflowDiagramNodeData>): void {
     const schema = node.data.formSchema || this.createDefaultFormSchema(node);
-    const newField = this.createDefaultFormField('text', (schema.fields.length || 0) + 1);
-    this.updateNodeData(node, { formSchema: { ...schema, fields: [...schema.fields, newField] } });
+    const field = schema.fields || [];
+    const newField = this.createDefaultFormField('text', field.length + 1);
+    this.updateNodeData(node, { formSchema: { ...schema, fields: [...field, newField] } });
   }
 
   public removeFormField(node: Node<WorkflowDiagramNodeData>, id: string): void {
     const schema = node.data.formSchema;
-    if (!schema) return;
+    if (!schema || !schema.fields) return;
     const fields = schema.fields.filter((f: DynamicFormField) => f.id !== id);
     this.updateNodeData(node, { formSchema: { ...schema, fields } });
   }
