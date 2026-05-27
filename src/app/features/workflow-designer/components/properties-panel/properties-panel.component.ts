@@ -55,7 +55,7 @@ import { WorkflowDesignerStateService } from '../../core/services/workflow-desig
 export class PropertiesPanelComponent {
   node = input<SimpleNode<WorkflowDiagramNodeData> | null>(null);
   edge = input<Edge<any> | null>(null);
-  
+
   private actionService = inject(WorkflowDesignerActionService);
   public stateService = inject(WorkflowDesignerStateService);
 
@@ -73,6 +73,13 @@ export class PropertiesPanelComponent {
 
   updateActive(active: boolean) {
     if (this.node()) this.actionService.updateNodeData(this.node()!, { formEnabled: active });
+  }
+
+  updateNodeLabel(label: string) {
+    if (this.node()) {
+      this.actionService.updateNodeData(this.node()!, { label });
+      this.stateService.markDirty();
+    }
   }
 
   updateEdgeLabel(label: string) {

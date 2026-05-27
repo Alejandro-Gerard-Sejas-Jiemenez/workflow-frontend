@@ -43,7 +43,7 @@ import { WorkflowDesignerStateService } from '../../core/services/workflow-desig
           <div class="workflow-node__flow-final"><div class="workflow-node__flow-final-x"></div></div>
         } @else if (node().type === 'decision' || node().type === 'merge') {
           <div class="workflow-node__diamond">
-            <span class="workflow-node__diamond-label">{{ node().data.typeLabel }}</span>
+            <span class="workflow-node__diamond-label">{{ node().data.label || node().data.typeLabel }}</span>
           </div>
         } @else if (node().type === 'fork' || node().type === 'join') {
           <div class="workflow-node__bar"></div>
@@ -64,7 +64,7 @@ import { WorkflowDesignerStateService } from '../../core/services/workflow-desig
                       [disabled]="stateService.isPublished()">
                 <option value="">Seleccionar Departamento</option>
                 @for (dept of configService.departments(); track dept.id) {
-                  <option [value]="dept.nombre">{{ dept.nombre }}</option>
+                  <option [value]="dept.nombre" [selected]="dept.nombre === node().data.label">{{ dept.nombre }}</option>
                 }
               </select>
             </div>
@@ -89,7 +89,7 @@ import { WorkflowDesignerStateService } from '../../core/services/workflow-desig
           </div>
         } @else {
           <div class="workflow-node__body">
-            <h4 class="workflow-node__title">{{ node().data.label }}</h4>
+            <h4 class="workflow-node__title">{{ node().data.formSchema?.title || node().data.label }}</h4>
             <p class="workflow-node__role">{{ node().data.role }}</p>
           </div>
         }
@@ -112,6 +112,7 @@ export class NodeComponent implements NgDiagramNodeTemplate<WorkflowDiagramNodeD
   onLaneDepartmentChange(event: Event) {
     const select = event.target as HTMLSelectElement;
     this.configService.updateNodeData(this.node(), { label: select.value });
+    this.stateService.markDirty();
   }
 
   startResize(event: MouseEvent, dir: string) {
