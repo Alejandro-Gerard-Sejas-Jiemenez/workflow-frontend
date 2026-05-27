@@ -74,19 +74,21 @@ export class AdminApiService {
       departamentos: this.http.get<AdminDepartment[]>(this.departamentosUrl).pipe(catchError(() => of([]))),
       bitacora: this.http.get<AdminAuditLog[]>(this.bitacoraUrl).pipe(catchError(() => of([])))
     }).pipe(
-      map(({ roles, usuarios, usuariosInactivos, workflows, notificaciones, departamentos, bitacora }) => ({
-        metrics: this.buildMetrics(usuarios, workflows, notificaciones),
-        roles: roles
-          .filter((role) => role.nombre !== 'ROLE_USER')
-          .map((role) => this.mapRole(role)),
-        departments: departamentos,
-        auditLogs: bitacora,
-        inactiveUsers: usuariosInactivos.length,
-        activeUsers: usuarios.map((user) => this.mapUser(user)),
-        inactiveUserList: usuariosInactivos.map((user) => this.mapUser(user)),
-        recentUsers: usuarios.slice(0, 5).map((user) => this.mapUser(user)),
-        recentNotifications: notificaciones.slice(0, 5).map((notification) => this.mapNotification(notification))
-      }))
+      map(({ roles, usuarios, usuariosInactivos, workflows, notificaciones, departamentos, bitacora }) => {
+        return {
+          metrics: this.buildMetrics(usuarios, workflows, notificaciones),
+          roles: roles
+            .filter((role) => role.nombre !== 'ROLE_USER')
+            .map((role) => this.mapRole(role)),
+          departments: departamentos,
+          auditLogs: bitacora,
+          inactiveUsers: usuariosInactivos.length,
+          activeUsers: usuarios.map((user) => this.mapUser(user)),
+          inactiveUserList: usuariosInactivos.map((user) => this.mapUser(user)),
+          recentUsers: usuarios.slice(0, 5).map((user) => this.mapUser(user)),
+          recentNotifications: notificaciones.slice(0, 5).map((notification) => this.mapNotification(notification))
+        };
+      })
     );
   }
 
