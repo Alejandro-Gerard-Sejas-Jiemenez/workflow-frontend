@@ -2,63 +2,105 @@
   <app-page-header icon="pi pi-exclamation-triangle" title="Corregir Solicitud"
     [subtitle]="'Solicitud #' + (tarea()?.id?.substring(0,8) || '')" actionLabel="Volver" (action)="goBack()" />
 
-  <main class="mx-auto w-full max-w-4xl p-8">
+  <main class="mx-auto w-full max-w-2xl p-8">
 
     <!-- Aviso de Observación -->
-    <div class="mb-8 p-6 rounded-3xl bg-amber-50 border border-amber-200 flex gap-4">
+    <div class="mb-8 p-6 rounded-3xl bg-amber-950/40 border border-amber-800/80 flex gap-4 text-amber-200">
       <i class="pi pi-info-circle text-2xl text-amber-500"></i>
       <div>
-        <h4 class="text-amber-800 font-bold mb-1">Corrección Requerida</h4>
-        <p class="text-amber-700 text-sm">
+        <h4 class="text-amber-300 font-bold mb-1">Corrección Requerida</h4>
+        <p class="text-amber-400 text-xs font-medium leading-relaxed">
           {{ tarea()?.historial?.[tarea()?.historial?.length - 1]?.detalle || 'Por favor revisa los datos enviados.' }}
         </p>
       </div>
     </div>
 
-    <div class="rounded-[2.5rem] bg-white p-10 shadow-sm border border-slate-100">
-      @if (formulario(); as form) {
-      <div class="grid grid-cols-1 md:grid-cols-2 gap-8 mb-12">
-        @for (campo of form.campos; track campo.nombre) {
-        <div class="flex flex-col gap-2">
-          <label class="text-sm font-semibold text-slate-700">
-            {{ campo.nombre }}
-            @if(campo.requerido){ <span class="text-rose-500">*</span> }
-          </label>
-
-          @if (campo.tipo === 'texto' || campo.tipo === 'text') {
-          <input type="text" [ngModel]="formData()[campo.nombre]" (ngModelChange)="updateField(campo.nombre, $event)"
-            class="h-12 w-full rounded-2xl border border-slate-200 bg-slate-50 px-4 text-sm transition focus:border-violet-300 focus:bg-white focus:ring-4 focus:ring-violet-50 outline-none" />
-          } @else if (campo.tipo === 'numero' || campo.tipo === 'number') {
-          <input type="number" [ngModel]="formData()[campo.nombre]" (ngModelChange)="updateField(campo.nombre, $event)"
-            class="h-12 w-full rounded-2xl border border-slate-200 bg-slate-50 px-4 text-sm transition focus:border-violet-300 focus:bg-white focus:ring-4 focus:ring-violet-50 outline-none" />
-          } @else if (campo.tipo === 'fecha' || campo.tipo === 'date') {
-          <input type="date" [ngModel]="formData()[campo.nombre]" (ngModelChange)="updateField(campo.nombre, $event)"
-            class="h-12 w-full rounded-2xl border border-slate-200 bg-slate-50 px-4 text-sm transition focus:border-violet-300 focus:bg-white focus:ring-4 focus:ring-violet-50 outline-none" />
-          } @else if (campo.tipo === 'opciones' || campo.tipo === 'select') {
-          <select [ngModel]="formData()[campo.nombre]" (ngModelChange)="updateField(campo.nombre, $event)"
-            class="h-12 w-full rounded-2xl border border-slate-200 bg-slate-50 px-4 text-sm transition focus:border-violet-300 focus:bg-white focus:ring-4 focus:ring-violet-50 outline-none">
-            <option value="">Seleccione...</option>
-            @for (opt of getOptions(campo.opciones); track opt) {
-            <option [value]="opt">{{ opt }}</option>
-            }
-          </select>
-          }
-        </div>
-        }
-      </div>
-
-      <button (click)="submit()" [disabled]="isSubmitting"
-        class="w-full h-14 rounded-2xl bg-amber-500 text-white font-bold text-lg shadow-xl shadow-amber-900/20 hover:bg-amber-600 transition active:scale-95 disabled:opacity-50">
-        @if (isSubmitting) {
-        <i class="pi pi-spin pi-spinner mr-2"></i> Reenviando...
-        } @else {
-        Reenviar con Correcciones
-        }
-      </button>
-      } @else {
+    <div class="bg-[#0f172a] rounded-3xl p-10 border border-slate-800/80 shadow-2xl text-slate-200">
+      @if (tarea() === null || workflow() === null) {
       <div class="p-20 text-center">
-        <i class="pi pi-spin pi-spinner text-4xl text-violet-200"></i>
+        <i class="pi pi-spin pi-spinner text-4xl text-violet-500"></i>
       </div>
+      } @else {
+        <!-- Encabezado Dinámico -->
+        <div class="mb-8 border-b border-slate-800/80 pb-6">
+          <h3 class="text-xl font-black text-white uppercase tracking-wider">
+            {{ formulario()?.nombre || pasoInicial()?.nombre || 'Corregir Solicitud' }}
+          </h3>
+          <p class="text-xs text-slate-400 mt-2 font-medium leading-relaxed">
+            {{ formulario()?.descripcion || 'Revisa y corrige los campos de datos e ingresa las modificaciones sugeridas.' }}
+          </p>
+        </div>
+
+        @if (formulario(); as form) {
+          @if (form.campos && form.campos.length > 0) {
+            <div class="grid grid-cols-1 gap-6 mb-8">
+              @for (campo of form.campos; track campo.nombre) {
+              <div class="flex flex-col gap-2">
+                <label class="text-[10px] font-bold uppercase tracking-widest text-slate-400">
+                  {{ campo.nombre }}
+                  @if(campo.requerido){ <span class="text-rose-500">*</span> }
+                </label>
+
+                @if (campo.tipo === 'texto' || campo.tipo === 'text') {
+                <input type="text" [ngModel]="formData()[campo.nombre]" (ngModelChange)="updateField(campo.nombre, $event)"
+                  class="h-12 w-full rounded-2xl border border-slate-800 bg-[#1e293b] px-4 text-sm text-white placeholder-slate-500 transition focus:border-violet-500 focus:bg-[#1e293b] focus:ring-4 focus:ring-violet-500/10 outline-none" />
+                } @else if (campo.tipo === 'textarea') {
+                <textarea rows="3" [ngModel]="formData()[campo.nombre]" (ngModelChange)="updateField(campo.nombre, $event)"
+                  class="w-full rounded-2xl border border-slate-800 bg-[#1e293b] p-4 text-sm text-white placeholder-slate-500 transition focus:border-violet-500 focus:bg-[#1e293b] focus:ring-4 focus:ring-violet-500/10 outline-none resize-y"></textarea>
+                } @else if (campo.tipo === 'numero' || campo.tipo === 'number') {
+                <input type="number" [ngModel]="formData()[campo.nombre]" (ngModelChange)="updateField(campo.nombre, $event)"
+                  class="h-12 w-full rounded-2xl border border-slate-800 bg-[#1e293b] px-4 text-sm text-white placeholder-slate-500 transition focus:border-violet-500 focus:bg-[#1e293b] focus:ring-4 focus:ring-violet-500/10 outline-none" />
+                } @else if (campo.tipo === 'fecha' || campo.tipo === 'date') {
+                <input type="date" [ngModel]="formData()[campo.nombre]" (ngModelChange)="updateField(campo.nombre, $event)"
+                  class="h-12 w-full rounded-2xl border border-slate-800 bg-[#1e293b] px-4 text-sm text-white placeholder-slate-500 transition focus:border-violet-500 focus:bg-[#1e293b] focus:ring-4 focus:ring-violet-500/10 outline-none" />
+                } @else if (campo.tipo === 'opciones' || campo.tipo === 'select') {
+                <select [ngModel]="formData()[campo.nombre]" (ngModelChange)="updateField(campo.nombre, $event)"
+                  class="h-12 w-full rounded-2xl border border-slate-800 bg-[#1e293b] px-4 text-sm text-white placeholder-slate-500 transition focus:border-violet-500 focus:bg-[#1e293b] focus:ring-4 focus:ring-violet-500/10 outline-none cursor-pointer">
+                  <option value="" class="bg-[#1e293b]">Seleccione...</option>
+                  @for (opt of getOptions(campo.opciones); track opt) {
+                  <option [value]="opt" class="bg-[#1e293b]">{{ opt }}</option>
+                  }
+                </select>
+                } @else if (campo.tipo === 'archivo' || campo.tipo === 'file') {
+                <div class="relative">
+                  <input type="file" (change)="onFormFieldSelected(campo.nombre, $event)"
+                    class="w-full rounded-2xl border border-slate-800 bg-[#1e293b] px-4 py-2 text-sm text-white transition focus:border-violet-500 focus:ring-4 focus:ring-violet-500/10 outline-none file:mr-3 file:py-1 file:px-3 file:rounded-xl file:border-0 file:text-xs file:font-bold file:bg-violet-600/20 file:text-violet-400 hover:file:bg-violet-600/35 cursor-pointer" />
+                  @if (isUploading()) {
+                  <div class="absolute right-4 top-1/2 -translate-y-1/2 flex items-center gap-2 text-violet-400 text-xs font-bold">
+                    <i class="pi pi-spin pi-spinner animate-spin"></i>
+                  </div>
+                  } @else if (formData()[campo.nombre]) {
+                  <div class="absolute right-4 top-1/2 -translate-y-1/2 text-emerald-500">
+                    <i class="pi pi-check-circle text-xl"></i>
+                  </div>
+                  }
+                </div>
+                @if (formData()[campo.nombre] && !isUploading()) {
+                <p class="text-xs text-emerald-400 mt-1 font-medium flex items-center gap-1">
+                  <i class="pi pi-link"></i> <a [href]="formData()[campo.nombre]" target="_blank" class="underline hover:text-emerald-300">Ver archivo adjunto</a>
+                </p>
+                }
+                } @else if (campo.tipo === 'checkbox' || campo.tipo === 'booleano') {
+                <label class="flex items-center gap-3 p-3 h-12 rounded-2xl border border-slate-800 bg-[#1e293b] cursor-pointer hover:border-violet-500 transition shadow-sm w-full">
+                  <input type="checkbox" [ngModel]="formData()[campo.nombre]" (ngModelChange)="updateField(campo.nombre, $event)"
+                    class="w-5 h-5 rounded-md border-slate-700 bg-[#0f172a] text-violet-600 focus:ring-violet-500 focus:ring-2" />
+                  <span class="text-xs font-bold uppercase tracking-widest text-slate-400">Confirmar / Aceptar</span>
+                </label>
+                }
+              </div>
+              }
+            </div>
+          }
+        }
+
+        <button (click)="submit()" [disabled]="isSubmitting"
+          class="w-full h-12 rounded-xl bg-amber-500 text-[#0f172a] font-bold text-xs uppercase tracking-widest shadow-lg shadow-amber-900/15 hover:bg-amber-400 hover:shadow-amber-900/30 transition active:scale-95 disabled:opacity-50">
+          @if (isSubmitting) {
+          <i class="pi pi-spin pi-spinner mr-2"></i> Reenviando...
+          } @else {
+          Reenviar con Correcciones
+          }
+        </button>
       }
     </div>
   </main>

@@ -21,9 +21,28 @@ export class ClientCorrectionComponent implements OnInit {
 
   protected readonly tarea = signal<any>(null);
   protected readonly workflow = signal<any>(null);
+  protected readonly pasoInicial = signal<any>(null);
   protected readonly formulario = signal<any>(null);
   protected readonly formData = signal<Record<string, any>>({});
+  protected readonly isUploading = signal<boolean>(false);
   protected isSubmitting = false;
+
+  protected onFormFieldSelected(fieldName: string, event: Event): void {
+    const input = event.target as HTMLInputElement;
+    if (input.files && input.files.length > 0) {
+      this.isUploading.set(true);
+      this.clientService.uploadFiles(Array.from(input.files)).subscribe({
+        next: (urls) => {
+          this.updateField(fieldName, urls.join(', '));
+          this.isUploading.set(false);
+        },
+        error: (err) => {
+          console.error('Error al subir archivo del campo:', err);
+          this.isUploading.set(false);
+        }
+      });
+    }
+  }
 
   ngOnInit(): void {
     const id = this.route.snapshot.paramMap.get('id');
@@ -37,10 +56,13 @@ export class ClientCorrectionComponent implements OnInit {
           this.tareaService.getWorkflow(t.workflowId).subscribe(wf => {
             this.workflow.set(wf);
             const paso1 = wf.pasos?.find((p: any) => p.orden === 1);
-            if (paso1 && paso1.formularioId) {
-              this.clientService.getFormulario(paso1.formularioId).subscribe(form => {
-                this.formulario.set(form);
-              });
+            if (paso1) {
+              this.pasoInicial.set(paso1);
+              if (paso1.formularioId) {
+                this.clientService.getFormulario(paso1.formularioId).subscribe(form => {
+                  this.formulario.set(form);
+                });
+              }
             }
           });
         }
