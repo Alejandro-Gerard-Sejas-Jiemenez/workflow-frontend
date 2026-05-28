@@ -1,6 +1,6 @@
 import { Component, input, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { NgDiagramPortComponent, NgDiagramNodeTemplate, SimpleNode } from 'ng-diagram';
+import { NgDiagramPortComponent, NgDiagramNodeTemplate, SimpleNode, NgDiagramModelService } from 'ng-diagram';
 
 export type DynamicFormField = {
   id: string; type: string; label: string; placeholder?: string;
@@ -90,7 +90,7 @@ import { WorkflowDesignerStateService } from '../../core/services/workflow-desig
         } @else {
           <div class="workflow-node__body">
             <h4 class="workflow-node__title">{{ node().data.formSchema?.title || node().data.label }}</h4>
-            <p class="workflow-node__role">{{ node().data.role }}</p>
+            <p class="workflow-node__role">{{ getDepartmentName() || node().data.role || 'RECEPCION' }}</p>
           </div>
         }
       </div>
@@ -108,6 +108,35 @@ export class NodeComponent implements NgDiagramNodeTemplate<WorkflowDiagramNodeD
   readonly node = input.required<SimpleNode<WorkflowDiagramNodeData>>();
   protected readonly configService = inject(WorkflowDesignerConfigService);
   public readonly stateService = inject(WorkflowDesignerStateService);
+  private readonly modelService = inject(NgDiagramModelService);
+
+  getDepartmentName(): string {
+    const taskNode = this.node();
+    if (taskNode.type === 'lane') return '';
+    if (taskNode.type === 'start') return 'RECEPCION';
+
+    const role = (taskNode.data as any)?.role || (taskNode.data as any)?.departamento || '';
+
+    // Buscar si está dentro de algún carril (lane)
+    const allNodes = this.modelService.nodes();
+    const lanes = allNodes.filter(n => n.type === 'lane');
+
+    const taskX = taskNode.position.x;
+    const taskY = taskNode.position.y;
+
+    for (const lane of lanes) {
+      const laneX = lane.position.x;
+      const laneY = lane.position.y;
+      const laneW = lane.size?.width || 200;
+      const laneH = lane.size?.height || 800;
+
+      if (taskX >= laneX && taskX <= (laneX + laneW) && taskY >= laneY && taskY <= (laneY + laneH)) {
+        return (lane.data as any)?.label || '';
+      }
+    }
+
+    return role;
+  }
 
   onLaneDepartmentChange(event: Event) {
     const select = event.target as HTMLSelectElement;

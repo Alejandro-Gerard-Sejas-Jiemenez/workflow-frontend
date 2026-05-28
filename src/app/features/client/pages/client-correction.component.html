@@ -1,13 +1,9 @@
 <div class="flex min-h-screen flex-col bg-slate-50">
-  <app-page-header
-    icon="pi pi-exclamation-triangle"
-    title="Corregir Solicitud"
-    [subtitle]="'Solicitud #' + (tarea()?.id?.substring(0,8) || '')"
-    actionLabel="Volver"
-    (action)="goBack()" />
+  <app-page-header icon="pi pi-exclamation-triangle" title="Corregir Solicitud"
+    [subtitle]="'Solicitud #' + (tarea()?.id?.substring(0,8) || '')" actionLabel="Volver" (action)="goBack()" />
 
   <main class="mx-auto w-full max-w-4xl p-8">
-    
+
     <!-- Aviso de Observación -->
     <div class="mb-8 p-6 rounded-3xl bg-amber-50 border border-amber-200 flex gap-4">
       <i class="pi pi-info-circle text-2xl text-amber-500"></i>
@@ -21,46 +17,48 @@
 
     <div class="rounded-[2.5rem] bg-white p-10 shadow-sm border border-slate-100">
       @if (formulario(); as form) {
-        <div class="grid grid-cols-1 md:grid-cols-2 gap-8 mb-12">
-          @for (campo of form.campos; track campo.nombre) {
-            <div class="flex flex-col gap-2">
-              <label class="text-sm font-semibold text-slate-700">
-                {{ campo.nombre }} 
-                @if(campo.requerido){ <span class="text-rose-500">*</span> }
-              </label>
-              
-              @if (campo.tipo === 'texto' || campo.tipo === 'text') {
-                <input type="text" [ngModel]="formData()[campo.nombre]" (ngModelChange)="updateField(campo.nombre, $event)" class="h-12 w-full rounded-2xl border border-slate-200 bg-slate-50 px-4 text-sm transition focus:border-violet-300 focus:bg-white focus:ring-4 focus:ring-violet-50 outline-none" />
-              } @else if (campo.tipo === 'numero' || campo.tipo === 'number') {
-                <input type="number" [ngModel]="formData()[campo.nombre]" (ngModelChange)="updateField(campo.nombre, $event)" class="h-12 w-full rounded-2xl border border-slate-200 bg-slate-50 px-4 text-sm transition focus:border-violet-300 focus:bg-white focus:ring-4 focus:ring-violet-50 outline-none" />
-              } @else if (campo.tipo === 'fecha' || campo.tipo === 'date') {
-                <input type="date" [ngModel]="formData()[campo.nombre]" (ngModelChange)="updateField(campo.nombre, $event)" class="h-12 w-full rounded-2xl border border-slate-200 bg-slate-50 px-4 text-sm transition focus:border-violet-300 focus:bg-white focus:ring-4 focus:ring-violet-50 outline-none" />
-              } @else if (campo.tipo === 'opciones' || campo.tipo === 'select') {
-                <select [ngModel]="formData()[campo.nombre]" (ngModelChange)="updateField(campo.nombre, $event)" class="h-12 w-full rounded-2xl border border-slate-200 bg-slate-50 px-4 text-sm transition focus:border-violet-300 focus:bg-white focus:ring-4 focus:ring-violet-50 outline-none">
-                  <option value="">Seleccione...</option>
-                  @for (opt of getOptions(campo.opciones); track opt) {
-                    <option [value]="opt">{{ opt }}</option>
-                  }
-                </select>
-              }
-            </div>
-          }
-        </div>
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-8 mb-12">
+        @for (campo of form.campos; track campo.nombre) {
+        <div class="flex flex-col gap-2">
+          <label class="text-sm font-semibold text-slate-700">
+            {{ campo.nombre }}
+            @if(campo.requerido){ <span class="text-rose-500">*</span> }
+          </label>
 
-        <button 
-          (click)="submit()" 
-          [disabled]="isSubmitting"
-          class="w-full h-14 rounded-2xl bg-amber-500 text-white font-bold text-lg shadow-xl shadow-amber-900/20 hover:bg-amber-600 transition active:scale-95 disabled:opacity-50">
-          @if (isSubmitting) {
-            <i class="pi pi-spin pi-spinner mr-2"></i> Reenviando...
-          } @else {
-            Reenviar con Correcciones
+          @if (campo.tipo === 'texto' || campo.tipo === 'text') {
+          <input type="text" [ngModel]="formData()[campo.nombre]" (ngModelChange)="updateField(campo.nombre, $event)"
+            class="h-12 w-full rounded-2xl border border-slate-200 bg-slate-50 px-4 text-sm transition focus:border-violet-300 focus:bg-white focus:ring-4 focus:ring-violet-50 outline-none" />
+          } @else if (campo.tipo === 'numero' || campo.tipo === 'number') {
+          <input type="number" [ngModel]="formData()[campo.nombre]" (ngModelChange)="updateField(campo.nombre, $event)"
+            class="h-12 w-full rounded-2xl border border-slate-200 bg-slate-50 px-4 text-sm transition focus:border-violet-300 focus:bg-white focus:ring-4 focus:ring-violet-50 outline-none" />
+          } @else if (campo.tipo === 'fecha' || campo.tipo === 'date') {
+          <input type="date" [ngModel]="formData()[campo.nombre]" (ngModelChange)="updateField(campo.nombre, $event)"
+            class="h-12 w-full rounded-2xl border border-slate-200 bg-slate-50 px-4 text-sm transition focus:border-violet-300 focus:bg-white focus:ring-4 focus:ring-violet-50 outline-none" />
+          } @else if (campo.tipo === 'opciones' || campo.tipo === 'select') {
+          <select [ngModel]="formData()[campo.nombre]" (ngModelChange)="updateField(campo.nombre, $event)"
+            class="h-12 w-full rounded-2xl border border-slate-200 bg-slate-50 px-4 text-sm transition focus:border-violet-300 focus:bg-white focus:ring-4 focus:ring-violet-50 outline-none">
+            <option value="">Seleccione...</option>
+            @for (opt of getOptions(campo.opciones); track opt) {
+            <option [value]="opt">{{ opt }}</option>
+            }
+          </select>
           }
-        </button>
-      } @else {
-        <div class="p-20 text-center">
-          <i class="pi pi-spin pi-spinner text-4xl text-violet-200"></i>
         </div>
+        }
+      </div>
+
+      <button (click)="submit()" [disabled]="isSubmitting"
+        class="w-full h-14 rounded-2xl bg-amber-500 text-white font-bold text-lg shadow-xl shadow-amber-900/20 hover:bg-amber-600 transition active:scale-95 disabled:opacity-50">
+        @if (isSubmitting) {
+        <i class="pi pi-spin pi-spinner mr-2"></i> Reenviando...
+        } @else {
+        Reenviar con Correcciones
+        }
+      </button>
+      } @else {
+      <div class="p-20 text-center">
+        <i class="pi pi-spin pi-spinner text-4xl text-violet-200"></i>
+      </div>
       }
     </div>
   </main>

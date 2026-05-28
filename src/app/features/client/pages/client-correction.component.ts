@@ -33,7 +33,7 @@ export class ClientCorrectionComponent implements OnInit {
         if (t) {
           this.tarea.set(t);
           this.formData.set({ ...(t.datos || {}) });
-          
+
           this.tareaService.getWorkflow(t.workflowId).subscribe(wf => {
             this.workflow.set(wf);
             const paso1 = wf.pasos?.find((p: any) => p.orden === 1);
@@ -64,7 +64,7 @@ export class ClientCorrectionComponent implements OnInit {
     if (!t) return;
 
     this.isSubmitting = true;
-    
+
     // Usamos el endpoint de gestión con la acción especial REENVIO_CORRECCION
     this.tareaService.gestionarTarea(t.id, 'REENVIO_CORRECCION', 'Correcciones enviadas por el cliente', this.formData()).subscribe({
       next: () => {

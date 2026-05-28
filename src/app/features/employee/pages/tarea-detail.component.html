@@ -1,30 +1,20 @@
 <div class="flex min-h-screen flex-col bg-slate-50">
-  <app-page-header
-    icon="pi pi-file-edit"
-    [title]="'Expediente #' + (tarea()?.id?.substring(0, 8) ?? '')"
-    [subtitle]="workflow()?.nombre || 'Cargando...'"
-    [badgeText]="tarea()?.estado || ''"
-    actionLabel="Volver al panel"
+  <app-page-header icon="pi pi-file-edit" [title]="'Expediente #' + (tarea()?.id?.substring(0, 8) ?? '')"
+    [subtitle]="workflow()?.nombre || 'Cargando...'" [badgeText]="tarea()?.estado || ''" actionLabel="Volver al panel"
     (action)="goBack()" />
 
   <nav class="flex border-b border-slate-200 bg-white px-6 xl:px-10">
-    <button 
-      (click)="activeTab = 'expediente'"
-      [class.border-violet-600]="activeTab === 'expediente'"
+    <button (click)="activeTab = 'expediente'" [class.border-violet-600]="activeTab === 'expediente'"
       [class.text-violet-600]="activeTab === 'expediente'"
       class="border-b-2 border-transparent px-6 py-4 text-sm font-semibold transition hover:text-violet-600">
       Datos del Cliente
     </button>
-    <button 
-      (click)="activeTab = 'actividad'"
-      [class.border-violet-600]="activeTab === 'actividad'"
+    <button (click)="activeTab = 'actividad'" [class.border-violet-600]="activeTab === 'actividad'"
       [class.text-violet-600]="activeTab === 'actividad'"
       class="border-b-2 border-transparent px-6 py-4 text-sm font-semibold transition hover:text-violet-600">
       Formulario de Actividad
     </button>
-    <button 
-      (click)="activeTab = 'historial'"
-      [class.border-violet-600]="activeTab === 'historial'"
+    <button (click)="activeTab = 'historial'" [class.border-violet-600]="activeTab === 'historial'"
       [class.text-violet-600]="activeTab === 'historial'"
       class="border-b-2 border-transparent px-6 py-4 text-sm font-semibold transition hover:text-violet-600">
       Línea de Tiempo
@@ -34,173 +24,194 @@
   <main class="mx-auto flex w-full max-w-7xl gap-8 px-6 py-10 xl:px-10">
     <!-- Panel Principal -->
     <div class="flex-1 space-y-8">
-      
+
       @if (tarea(); as t) {
-        
-        <!-- Tab 1: Expediente del Cliente -->
-        @if (activeTab === 'expediente') {
-          <div class="rounded-[2.5rem] bg-white p-10 shadow-sm border border-slate-100">
-            <h3 class="text-2xl font-bold text-slate-900 mb-8 flex items-center gap-3">
-              <i class="pi pi-user text-violet-500"></i>
-              Información de Solicitud
-            </h3>
-            
-            <div class="grid grid-cols-1 md:grid-cols-2 gap-x-12 gap-y-8">
-              @for (entry of t.datos | keyvalue; track entry.key) {
-                <div class="group border-b border-slate-50 pb-4">
-                  <p class="text-[10px] font-bold uppercase tracking-widest text-slate-400 mb-1">{{ entry.key }}</p>
-                  <p class="text-base font-medium text-slate-800">{{ entry.value }}</p>
-                </div>
+
+      <!-- Tab 1: Expediente del Cliente -->
+      @if (activeTab === 'expediente') {
+      <div class="rounded-[2.5rem] bg-white p-10 shadow-sm border border-slate-100">
+        <h3 class="text-2xl font-bold text-slate-900 mb-8 flex items-center gap-3">
+          <i class="pi pi-user text-violet-500"></i>
+          Información de Solicitud
+        </h3>
+
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-x-12 gap-y-8">
+          @for (entry of t.datos | keyvalue; track entry.key) {
+          <div class="group border-b border-slate-50 pb-4">
+            <p class="text-[10px] font-bold uppercase tracking-widest text-slate-400 mb-1">{{ entry.key }}</p>
+            <p class="text-base font-medium text-slate-800">{{ entry.value }}</p>
+          </div>
+          }
+        </div>
+
+        @if (t.documentosUrl && t.documentosUrl.length > 0) {
+        <div class="mt-12">
+          <h4 class="text-sm font-bold uppercase tracking-widest text-slate-400 mb-4">Documentos Adjuntos</h4>
+          <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+            @for (doc of t.documentosUrl; track doc) {
+            <a [href]="doc" target="_blank"
+              class="flex items-center gap-3 p-4 rounded-2xl border border-slate-100 bg-slate-50 hover:border-violet-200 hover:bg-violet-50 transition group">
+              <div
+                class="h-10 w-10 flex items-center justify-center rounded-xl bg-white shadow-sm group-hover:text-violet-600">
+                <i class="pi pi-file-pdf text-lg"></i>
+              </div>
+              <span class="text-sm font-semibold text-slate-700 truncate">Ver documento</span>
+              <i class="pi pi-external-link ml-auto text-xs text-slate-400"></i>
+            </a>
+            }
+          </div>
+        </div>
+        }
+      </div>
+      }
+
+      <!-- Tab 2: Actividad (Formulario) -->
+      @if (activeTab === 'actividad') {
+      <div
+        class="rounded-[2.5rem] bg-white p-10 shadow-sm border border-slate-100 animate-in fade-in slide-in-from-bottom-4 duration-500">
+        <div class="mb-8">
+          <span
+            class="rounded-full bg-violet-100 px-3 py-1 text-[10px] font-bold uppercase tracking-widest text-violet-600">
+            Paso {{ t.pasoActual }}
+          </span>
+          <h3 class="text-2xl font-bold text-slate-900 mt-2">
+            {{ formulario()?.nombre || 'Formulario de Verificación' }}
+          </h3>
+        </div>
+
+        @if (formulario(); as form) {
+        <div class="grid grid-cols-1 gap-y-8 pt-4">
+          @for (campo of form.campos; track campo.nombre) {
+          <div class="flex flex-col">
+            <label class="text-sm font-semibold text-slate-700 mb-3">
+              {{ campo.nombre }}
+              @if(campo.requerido){ <span class="text-rose-500 ml-1">*</span> }
+            </label>
+
+            @if (campo.tipo === 'texto' || campo.tipo === 'text') {
+            <input type="text" [ngModel]="formData()[campo.nombre]" (ngModelChange)="updateField(campo.nombre, $event)"
+              class="h-14 w-full rounded-2xl border border-slate-200 bg-slate-50 px-5 text-sm transition focus:border-violet-400 focus:bg-white focus:ring-4 focus:ring-violet-50 outline-none shadow-sm" />
+            } @else if (campo.tipo === 'textarea') {
+            <textarea rows="3" [ngModel]="formData()[campo.nombre]" (ngModelChange)="updateField(campo.nombre, $event)"
+              class="w-full rounded-2xl border border-slate-200 bg-slate-50 p-5 text-sm transition focus:border-violet-400 focus:bg-white focus:ring-4 focus:ring-violet-50 outline-none shadow-sm resize-y"></textarea>
+            } @else if (campo.tipo === 'numero' || campo.tipo === 'number') {
+            <input type="number" [ngModel]="formData()[campo.nombre]"
+              (ngModelChange)="updateField(campo.nombre, $event)"
+              class="h-14 w-full rounded-2xl border border-slate-200 bg-slate-50 px-5 text-sm transition focus:border-violet-400 focus:bg-white focus:ring-4 focus:ring-violet-50 outline-none shadow-sm" />
+            } @else if (campo.tipo === 'fecha' || campo.tipo === 'date') {
+            <input type="date" [ngModel]="formData()[campo.nombre]" (ngModelChange)="updateField(campo.nombre, $event)"
+              class="h-14 w-full rounded-2xl border border-slate-200 bg-slate-50 px-5 text-sm transition focus:border-violet-400 focus:bg-white focus:ring-4 focus:ring-violet-50 outline-none shadow-sm" />
+            } @else if (campo.tipo === 'opciones' || campo.tipo === 'select') {
+            <select [ngModel]="formData()[campo.nombre]" (ngModelChange)="updateField(campo.nombre, $event)"
+              class="h-14 w-full rounded-2xl border border-slate-200 bg-slate-50 px-5 text-sm transition focus:border-violet-400 focus:bg-white focus:ring-4 focus:ring-violet-50 outline-none shadow-sm cursor-pointer">
+              <option value="">Seleccione...</option>
+              @for (opt of getOptions(campo); track opt) {
+              <option [value]="opt">{{ opt }}</option>
+              }
+            </select>
+            } @else if (campo.tipo === 'archivo' || campo.tipo === 'file') {
+            <div class="relative">
+              <input type="file" (change)="onFileSelected(campo.nombre, $event)"
+                class="w-full rounded-2xl border border-slate-200 bg-slate-50 px-5 py-3 text-sm transition focus:border-violet-400 focus:bg-white focus:ring-4 focus:ring-violet-50 outline-none shadow-sm file:mr-4 file:py-2 file:px-4 file:rounded-xl file:border-0 file:text-sm file:font-semibold file:bg-violet-100 file:text-violet-700 hover:file:bg-violet-200 cursor-pointer" />
+              @if (isUploading()) {
+              <div
+                class="absolute right-4 top-1/2 -translate-y-1/2 flex items-center gap-2 text-violet-600 text-xs font-bold">
+                <i class="pi pi-spin pi-spinner"></i> Subiendo...
+              </div>
+              } @else if (formData()[campo.nombre]) {
+              <div class="absolute right-4 top-1/2 -translate-y-1/2 text-emerald-500">
+                <i class="pi pi-check-circle text-xl"></i>
+              </div>
               }
             </div>
-
-            @if (t.documentosUrl && t.documentosUrl.length > 0) {
-              <div class="mt-12">
-                <h4 class="text-sm font-bold uppercase tracking-widest text-slate-400 mb-4">Documentos Adjuntos</h4>
-                <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                  @for (doc of t.documentosUrl; track doc) {
-                    <a [href]="doc" target="_blank" class="flex items-center gap-3 p-4 rounded-2xl border border-slate-100 bg-slate-50 hover:border-violet-200 hover:bg-violet-50 transition group">
-                      <div class="h-10 w-10 flex items-center justify-center rounded-xl bg-white shadow-sm group-hover:text-violet-600">
-                        <i class="pi pi-file-pdf text-lg"></i>
-                      </div>
-                      <span class="text-sm font-semibold text-slate-700 truncate">Ver documento</span>
-                      <i class="pi pi-external-link ml-auto text-xs text-slate-400"></i>
-                    </a>
-                  }
-                </div>
-              </div>
+            @if (formData()[campo.nombre] && !isUploading()) {
+            <p class="text-xs text-emerald-600 mt-2 font-medium flex items-center gap-1">
+              <i class="pi pi-link"></i> <a [href]="formData()[campo.nombre]" target="_blank"
+                class="underline hover:text-emerald-700">Archivo guardado correctamente</a>
+            </p>
+            }
+            } @else if (campo.tipo === 'checkbox' || campo.tipo === 'booleano') {
+            <label
+              class="flex items-center gap-3 p-4 h-14 rounded-2xl border border-slate-200 bg-slate-50 cursor-pointer hover:border-violet-400 transition shadow-sm w-full">
+              <input type="checkbox" [ngModel]="formData()[campo.nombre]"
+                (ngModelChange)="updateField(campo.nombre, $event)"
+                class="w-6 h-6 rounded-md border-slate-300 text-violet-600 focus:ring-violet-500 focus:ring-2 bg-white" />
+              <span class="text-sm font-medium text-slate-700">Marcar / Confirmar</span>
+            </label>
             }
           </div>
+          }
+        </div>
+        } @else {
+        <div class="p-12 text-center bg-slate-50 rounded-[2rem]">
+          <i class="pi pi-info-circle text-4xl text-slate-300 mb-4"></i>
+          <p class="text-slate-500 font-medium">No hay formulario específico para este paso. Use el panel lateral para
+            decidir.</p>
+        </div>
         }
+      </div>
+      }
 
-        <!-- Tab 2: Actividad (Formulario) -->
-        @if (activeTab === 'actividad') {
-          <div class="rounded-[2.5rem] bg-white p-10 shadow-sm border border-slate-100 animate-in fade-in slide-in-from-bottom-4 duration-500">
-            <div class="mb-8">
-              <span class="rounded-full bg-violet-100 px-3 py-1 text-[10px] font-bold uppercase tracking-widest text-violet-600">
-                Paso {{ t.pasoActual }}
-              </span>
-              <h3 class="text-2xl font-bold text-slate-900 mt-2">
-                {{ formulario()?.nombre || 'Formulario de Verificación' }}
-              </h3>
+      <!-- Tab 3: Historial -->
+      @if (activeTab === 'historial') {
+      <div class="space-y-6">
+        @for (item of t.historial; track item.fecha) {
+        <div
+          class="relative pl-8 before:absolute before:left-0 before:top-2 before:h-full before:w-[2px] before:bg-slate-200 last:before:h-8">
+          <div class="absolute left-[-6px] top-2 h-4 w-4 rounded-full border-4 border-white bg-violet-600 shadow-sm">
+          </div>
+          <div class="rounded-3xl bg-white p-6 shadow-sm border border-slate-100">
+            <div class="flex items-center justify-between mb-2">
+              <span class="text-xs font-bold uppercase tracking-widest text-violet-600">{{ item.accion }}</span>
+              <span class="text-xs text-slate-400">{{ item.fecha | date:'medium' }}</span>
             </div>
-
-            @if (formulario(); as form) {
-              <div class="grid grid-cols-1 gap-y-8 pt-4">
-                @for (campo of form.campos; track campo.nombre) {
-                  <div class="flex flex-col">
-                    <label class="text-sm font-semibold text-slate-700 mb-3">
-                      {{ campo.nombre }} 
-                      @if(campo.requerido){ <span class="text-rose-500 ml-1">*</span> }
-                    </label>
-                    
-                    @if (campo.tipo === 'texto' || campo.tipo === 'text') {
-                      <input type="text" [ngModel]="formData()[campo.nombre]" (ngModelChange)="updateField(campo.nombre, $event)" class="h-14 w-full rounded-2xl border border-slate-200 bg-slate-50 px-5 text-sm transition focus:border-violet-400 focus:bg-white focus:ring-4 focus:ring-violet-50 outline-none shadow-sm" />
-                    } @else if (campo.tipo === 'textarea') {
-                      <textarea rows="3" [ngModel]="formData()[campo.nombre]" (ngModelChange)="updateField(campo.nombre, $event)" class="w-full rounded-2xl border border-slate-200 bg-slate-50 p-5 text-sm transition focus:border-violet-400 focus:bg-white focus:ring-4 focus:ring-violet-50 outline-none shadow-sm resize-y"></textarea>
-                    } @else if (campo.tipo === 'numero' || campo.tipo === 'number') {
-                      <input type="number" [ngModel]="formData()[campo.nombre]" (ngModelChange)="updateField(campo.nombre, $event)" class="h-14 w-full rounded-2xl border border-slate-200 bg-slate-50 px-5 text-sm transition focus:border-violet-400 focus:bg-white focus:ring-4 focus:ring-violet-50 outline-none shadow-sm" />
-                    } @else if (campo.tipo === 'fecha' || campo.tipo === 'date') {
-                      <input type="date" [ngModel]="formData()[campo.nombre]" (ngModelChange)="updateField(campo.nombre, $event)" class="h-14 w-full rounded-2xl border border-slate-200 bg-slate-50 px-5 text-sm transition focus:border-violet-400 focus:bg-white focus:ring-4 focus:ring-violet-50 outline-none shadow-sm" />
-                    } @else if (campo.tipo === 'opciones' || campo.tipo === 'select') {
-                      <select [ngModel]="formData()[campo.nombre]" (ngModelChange)="updateField(campo.nombre, $event)" class="h-14 w-full rounded-2xl border border-slate-200 bg-slate-50 px-5 text-sm transition focus:border-violet-400 focus:bg-white focus:ring-4 focus:ring-violet-50 outline-none shadow-sm cursor-pointer">
-                        <option value="">Seleccione...</option>
-                        @for (opt of getOptions(campo); track opt) {
-                          <option [value]="opt">{{ opt }}</option>
-                        }
-                      </select>
-                    } @else if (campo.tipo === 'archivo' || campo.tipo === 'file') {
-                      <div class="relative">
-                        <input type="file" (change)="onFileSelected(campo.nombre, $event)" class="w-full rounded-2xl border border-slate-200 bg-slate-50 px-5 py-3 text-sm transition focus:border-violet-400 focus:bg-white focus:ring-4 focus:ring-violet-50 outline-none shadow-sm file:mr-4 file:py-2 file:px-4 file:rounded-xl file:border-0 file:text-sm file:font-semibold file:bg-violet-100 file:text-violet-700 hover:file:bg-violet-200 cursor-pointer" />
-                        @if (isUploading()) {
-                          <div class="absolute right-4 top-1/2 -translate-y-1/2 flex items-center gap-2 text-violet-600 text-xs font-bold">
-                            <i class="pi pi-spin pi-spinner"></i> Subiendo...
-                          </div>
-                        } @else if (formData()[campo.nombre]) {
-                           <div class="absolute right-4 top-1/2 -translate-y-1/2 text-emerald-500">
-                            <i class="pi pi-check-circle text-xl"></i>
-                          </div>
-                        }
-                      </div>
-                      @if (formData()[campo.nombre] && !isUploading()) {
-                        <p class="text-xs text-emerald-600 mt-2 font-medium flex items-center gap-1">
-                           <i class="pi pi-link"></i> <a [href]="formData()[campo.nombre]" target="_blank" class="underline hover:text-emerald-700">Archivo guardado correctamente</a>
-                        </p>
-                      }
-                    } @else if (campo.tipo === 'checkbox' || campo.tipo === 'booleano') {
-                      <label class="flex items-center gap-3 p-4 h-14 rounded-2xl border border-slate-200 bg-slate-50 cursor-pointer hover:border-violet-400 transition shadow-sm w-full">
-                        <input type="checkbox" [ngModel]="formData()[campo.nombre]" (ngModelChange)="updateField(campo.nombre, $event)" class="w-6 h-6 rounded-md border-slate-300 text-violet-600 focus:ring-violet-500 focus:ring-2 bg-white" />
-                        <span class="text-sm font-medium text-slate-700">Marcar / Confirmar</span>
-                      </label>
-                    }
-                  </div>
-                }
-              </div>
-            } @else {
-              <div class="p-12 text-center bg-slate-50 rounded-[2rem]">
-                <i class="pi pi-info-circle text-4xl text-slate-300 mb-4"></i>
-                <p class="text-slate-500 font-medium">No hay formulario específico para este paso. Use el panel lateral para decidir.</p>
-              </div>
-            }
+            <p class="text-sm text-slate-700">{{ item.detalle }}</p>
           </div>
+        </div>
         }
-
-        <!-- Tab 3: Historial -->
-        @if (activeTab === 'historial') {
-          <div class="space-y-6">
-            @for (item of t.historial; track item.fecha) {
-              <div class="relative pl-8 before:absolute before:left-0 before:top-2 before:h-full before:w-[2px] before:bg-slate-200 last:before:h-8">
-                <div class="absolute left-[-6px] top-2 h-4 w-4 rounded-full border-4 border-white bg-violet-600 shadow-sm"></div>
-                <div class="rounded-3xl bg-white p-6 shadow-sm border border-slate-100">
-                  <div class="flex items-center justify-between mb-2">
-                    <span class="text-xs font-bold uppercase tracking-widest text-violet-600">{{ item.accion }}</span>
-                    <span class="text-xs text-slate-400">{{ item.fecha | date:'medium' }}</span>
-                  </div>
-                  <p class="text-sm text-slate-700">{{ item.detalle }}</p>
-                </div>
-              </div>
-            }
-          </div>
-        }
+      </div>
+      }
       }
     </div>
 
     <!-- Sidebar de Acciones -->
     <aside class="w-96 space-y-6">
       <div class="sticky top-10 space-y-6">
-        
+
         <div class="rounded-[2.5rem] bg-slate-900 p-8 text-white shadow-xl">
           <h3 class="text-lg font-bold mb-6">Decisión del Funcionario</h3>
-          
+
           <div class="space-y-4">
             <div>
               <label class="block text-xs font-bold uppercase tracking-widest text-slate-400 mb-2">Observaciones</label>
-              <textarea 
-                [(ngModel)]="detalle"
-                rows="4"
+              <textarea [(ngModel)]="detalle" rows="4"
                 class="w-full rounded-2xl bg-slate-800 border-none px-4 py-3 text-sm text-white placeholder-slate-500 outline-none focus:ring-2 focus:ring-violet-500/50"
                 placeholder="Escribe el resultado de tu revisión..."></textarea>
             </div>
 
             <div class="pt-4 space-y-3">
               @if (tarea()?.estado === 'PENDIENTE_VERIFICACION') {
-                <button (click)="validar(true)" class="w-full flex items-center justify-center gap-2 h-14 rounded-2xl bg-emerald-500 font-bold text-white transition hover:bg-emerald-600 active:scale-95">
-                  <i class="pi pi-check-circle"></i>
-                  Aprobar Solicitud
-                </button>
-                <button (click)="validar(false)" class="w-full flex items-center justify-center gap-2 h-14 rounded-2xl border-2 border-amber-500/30 text-amber-500 font-bold transition hover:bg-amber-500/10 active:scale-95">
-                  <i class="pi pi-exclamation-triangle"></i>
-                  Pedir Corrección
-                </button>
+              <button (click)="validar(true)"
+                class="w-full flex items-center justify-center gap-2 h-14 rounded-2xl bg-emerald-500 font-bold text-white transition hover:bg-emerald-600 active:scale-95">
+                <i class="pi pi-check-circle"></i>
+                Aprobar Solicitud
+              </button>
+              <button (click)="validar(false)"
+                class="w-full flex items-center justify-center gap-2 h-14 rounded-2xl border-2 border-amber-500/30 text-amber-500 font-bold transition hover:bg-amber-500/10 active:scale-95">
+                <i class="pi pi-exclamation-triangle"></i>
+                Pedir Corrección
+              </button>
               } @else {
-                <button (click)="gestionar('COMPLETADO')" class="w-full flex items-center justify-center gap-2 h-14 rounded-2xl bg-violet-600 font-bold text-white transition hover:bg-violet-700 active:scale-95 shadow-lg shadow-violet-900/40">
-                  <i class="pi pi-check"></i>
-                  Completar Actividad
-                </button>
-                <button (click)="gestionar('RECHAZADO')" class="w-full flex items-center justify-center gap-2 h-14 rounded-2xl border-2 border-rose-500/30 text-rose-500 font-bold transition hover:bg-rose-500/10 active:scale-95">
-                  <i class="pi pi-times"></i>
-                  Rechazar Solicitud
-                </button>
+              <button (click)="gestionar('COMPLETADO')"
+                class="w-full flex items-center justify-center gap-2 h-14 rounded-2xl bg-violet-600 font-bold text-white transition hover:bg-violet-700 active:scale-95 shadow-lg shadow-violet-900/40">
+                <i class="pi pi-check"></i>
+                Completar Actividad
+              </button>
+              <button (click)="gestionar('RECHAZADO')"
+                class="w-full flex items-center justify-center gap-2 h-14 rounded-2xl border-2 border-rose-500/30 text-rose-500 font-bold transition hover:bg-rose-500/10 active:scale-95">
+                <i class="pi pi-times"></i>
+                Rechazar Solicitud
+              </button>
               }
             </div>
           </div>
@@ -212,7 +223,9 @@
           <div class="space-y-4">
             <div class="flex items-center justify-between">
               <span class="text-sm text-slate-500">Prioridad</span>
-              <span class="text-sm font-bold" [class]="tarea()?.prioridad === 'ALTA' ? 'text-rose-600' : 'text-slate-900'">{{ tarea()?.prioridad }}</span>
+              <span class="text-sm font-bold"
+                [class]="tarea()?.prioridad === 'ALTA' ? 'text-rose-600' : 'text-slate-900'">{{ tarea()?.prioridad
+                }}</span>
             </div>
             <div class="flex items-center justify-between">
               <span class="text-sm text-slate-500">Asignado a</span>

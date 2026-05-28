@@ -32,13 +32,13 @@ export class ClientRequestFormComponent implements OnInit {
           if (wf) {
             this.workflow.set(wf);
             const pasos = wf.pasos || [];
-            
+
             // Intentar buscar el paso 1, si no existe, tomar el primero de la lista
             let paso1 = pasos.find((p: any) => p.orden === 1);
             if (!paso1 && pasos.length > 0) {
               paso1 = pasos[0];
             }
-            
+
             if (paso1 && paso1.formularioId) {
               this.clientService.getFormulario(paso1.formularioId).subscribe({
                 next: (form) => this.formulario.set(form),
@@ -85,7 +85,7 @@ export class ClientRequestFormComponent implements OnInit {
     if (!wf) return;
 
     this.isSubmitting = true;
-    
+
     // Subir archivos primero si hay
     if (this.selectedFiles().length > 0) {
       this.clientService.uploadFiles(this.selectedFiles()).subscribe(urls => {
