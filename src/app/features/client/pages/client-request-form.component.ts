@@ -82,6 +82,37 @@ export class ClientRequestFormComponent implements OnInit {
     this.formData.set({ ...this.formData(), [key]: value });
   }
 
+  protected isOptionChecked(fieldName: string, option: string): boolean {
+    const value = this.formData()[fieldName];
+    if (!value) return false;
+    if (Array.isArray(value)) {
+      return value.includes(option);
+    }
+    if (typeof value === 'string') {
+      return value.split(',').map(s => s.trim()).includes(option);
+    }
+    return false;
+  }
+
+  protected toggleChecklistOption(fieldName: string, option: string, checked: boolean): void {
+    const current = this.formData()[fieldName];
+    let list: string[] = [];
+    if (Array.isArray(current)) {
+      list = [...current];
+    } else if (typeof current === 'string' && current.trim()) {
+      list = current.split(',').map(s => s.trim());
+    }
+    
+    if (checked) {
+      if (!list.includes(option)) {
+        list.push(option);
+      }
+    } else {
+      list = list.filter(item => item !== option);
+    }
+    this.updateField(fieldName, list);
+  }
+
   protected onFileSelected(event: any): void {
     const files = event.target.files;
     if (files && files.length > 0) {
